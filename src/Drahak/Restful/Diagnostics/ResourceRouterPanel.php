@@ -1,13 +1,14 @@
 <?php
+
 namespace Drahak\Restful\Diagnostics;
 
-use Traversable;
 use Drahak\Restful\Application\IResourceRouter;
-use Nette\Application\IRouter;
+use Nette\Routing\Route;
+use Nette\SmartObject;
 use Nette\Templating\Helpers;
-use Tracy\IBarPanel;
-use Nette\Object;
 use Nette\Utils\Html;
+use Tracy\IBarPanel;
+use Traversable;
 
 if (!interface_exists('Tracy\IBarPanel')) {
 	class_alias('Nette\Diagnostics\IBarPanel', 'Tracy\IBarPanel');
@@ -15,22 +16,22 @@ if (!interface_exists('Tracy\IBarPanel')) {
 
 /**
  * ResourceRouterPanel to see REST API resource routes
+ *
  * @package Drahak\Restful\Diagnostics
  * @author Drahomír Hanák
  */
-class ResourceRouterPanel extends Object implements IBarPanel
+class ResourceRouterPanel implements IBarPanel
 {
+	use SmartObject;
 
-	/** @var IRouter */
+	/** @var Route */
 	private $router;
-
 	/** @var string */
 	private $secretKey;
-
 	/** @var string */
 	private $requestTimeKey;
 
-	public function __construct($secretKey, $requestTimeKey, IRouter $router)
+	public function __construct($secretKey, $requestTimeKey, Route $router)
 	{
 		$this->secretKey = $secretKey;
 		$this->requestTimeKey = $requestTimeKey;
@@ -43,18 +44,22 @@ class ResourceRouterPanel extends Object implements IBarPanel
 	 */
 	private function getResourceRoutes($routeList)
 	{
-		static $resourceRoutes = array();
+		static $resourceRoutes = [];
 		foreach ($routeList as $route) {
-			if ($route instanceof Traversable)
+			if ($route instanceof Traversable) {
 				$this->getResourceRoutes($route);
-			if ($route instanceof IResourceRouter)
+			}
+			if ($route instanceof IResourceRouter) {
 				$resourceRoutes[] = $route;
+			}
 		}
+
 		return $resourceRoutes;
 	}
 
 	/**
 	 * Renders HTML code for custom tab.
+	 *
 	 * @return string
 	 */
 	public function getTab()
@@ -62,11 +67,13 @@ class ResourceRouterPanel extends Object implements IBarPanel
 		$icon = Html::el('img')
 			->src(Helpers::dataStream(file_get_contents(__DIR__ . '/icon.png')))
 			->height('16px');
-		return '<span class="REST API resource routes">'  .$icon . 'API resources</span>';
+
+		return '<span class="REST API resource routes">' . $icon . 'API resources</span>';
 	}
 
 	/**
 	 * Renders HTML code for custom panel.
+	 *
 	 * @return string
 	 */
 	public function getPanel()
@@ -74,7 +81,7 @@ class ResourceRouterPanel extends Object implements IBarPanel
 		ob_start();
 		$esc = ['Nette\Templating\Helpers', 'escapeHtml'];
 		$routes = $this->getResourceRoutes($this->router);
-		$methods = array(
+		$methods = [
 			IResourceRouter::GET => 'GET',
 			IResourceRouter::POST => 'POST',
 			IResourceRouter::PUT => 'PUT',
@@ -82,13 +89,12 @@ class ResourceRouterPanel extends Object implements IBarPanel
 			IResourceRouter::HEAD => 'HEAD',
 			IResourceRouter::PATCH => 'PATCH',
 			IResourceRouter::OPTIONS => 'OPTIONS',
-		);
+		];
 		$privateKey = $this->secretKey;
 		$requestTimeKey = $this->requestTimeKey;
 
 		require_once __DIR__ . '/panel.phtml';
+
 		return ob_get_clean();
-
 	}
-
 }

@@ -1,33 +1,32 @@
 <?php
+
 namespace Drahak\Restful\Http;
 
+use Drahak\Restful\Application\BadRequestException;
 use Drahak\Restful\InvalidStateException;
 use Drahak\Restful\Mapping\IMapper;
 use Drahak\Restful\Mapping\MapperContext;
 use Drahak\Restful\Mapping\MappingException;
 use Drahak\Restful\Validation\IValidationScopeFactory;
-use Drahak\Restful\Application\BadRequestException;
-use Nette\Http\IRequest;
-use Nette\Object;
 use Nette;
+use Nette\Http\IRequest;
+use Nette\SmartObject;
+use Traversable;
 
 /**
  * InputFactory
+ *
  * @package Drahak\Restful\Http
  * @author Drahomír Hanák
  */
-class InputFactory extends Object
+class InputFactory
 {
+	use SmartObject;
 
 	/** @var IRequest */
 	protected $httpRequest;
-
 	/** @var IValidationScopeFactory */
 	private $validationScopeFactory;
-
-	/** @var IMapper */
-	private $mapper;
-
 	/** @var MapperContext */
 	private $mapperContext;
 
@@ -36,8 +35,11 @@ class InputFactory extends Object
 	 * @param MapperContext $mapperContext
 	 * @param IValidationScopeFactory $validationScopeFactory
 	 */
-	public function __construct(IRequest $httpRequest, MapperContext $mapperContext, IValidationScopeFactory $validationScopeFactory)
-	{
+	public function __construct(
+		IRequest $httpRequest,
+		MapperContext $mapperContext,
+		IValidationScopeFactory $validationScopeFactory
+	) {
 		$this->httpRequest = $httpRequest;
 		$this->mapperContext = $mapperContext;
 		$this->validationScopeFactory = $validationScopeFactory;
@@ -45,17 +47,21 @@ class InputFactory extends Object
 
 	/**
 	 * Create input
+	 *
 	 * @return Input
+	 * @throws BadRequestException
 	 */
 	public function create()
 	{
 		$input = new Input($this->validationScopeFactory);
 		$input->setData($this->parseData());
+
 		return $input;
 	}
 
 	/**
 	 * Parse data for input
+	 *
 	 * @return array
 	 *
 	 * @throws BadRequestException
@@ -66,26 +72,27 @@ class InputFactory extends Object
 		$urlQuery = (array)$this->httpRequest->getQuery();
 		$requestBody = $this->parseRequestBody();
 
-		return array_merge($urlQuery, $postQuery, $requestBody);	// $requestBody must be the last one!!!
+		return array_merge($urlQuery, $postQuery, $requestBody);    // $requestBody must be the last one!!!
 	}
 
 	/**
 	 * Parse request body if any
-	 * @return array|\Traversable
+	 *
+	 * @return array|Traversable
 	 *
 	 * @throws BadRequestException
 	 */
 	protected function parseRequestBody()
 	{
-		$requestBody = array();
+		$requestBody = [];
 		$input = class_exists('Nette\Framework') && Nette\Framework::VERSION_ID <= 20200 ? // Nette 2.2.0 and/or newer
-			file_get_contents('php://input'):
+			file_get_contents('php://input') :
 			$this->httpRequest->getRawBody();
 
 		if ($input) {
 			try {
-				$this->mapper = $this->mapperContext->getMapper($this->httpRequest->getHeader('Content-Type'));
-				$requestBody = $this->mapper->parse($input);
+				$mapper = $this->mapperContext->getMapper($this->httpRequest->getHeader('Content-Type'));
+				$requestBody = $mapper->parse($input);
 			} catch (InvalidStateException $e) {
 				throw BadRequestException::unsupportedMediaType(
 					'No mapper defined for Content-Type ' . $this->httpRequest->getHeader('Content-Type'),
@@ -95,7 +102,7 @@ class InputFactory extends Object
 				throw new BadRequestException($e->getMessage(), 400, $e);
 			}
 		}
+
 		return $requestBody;
 	}
-
 }

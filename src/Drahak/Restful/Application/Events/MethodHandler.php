@@ -1,30 +1,32 @@
 <?php
+
 namespace Drahak\Restful\Application\Events;
 
-use Drahak\Restful\Application\MethodOptions;
 use Drahak\Restful\Application\BadRequestException;
-use Drahak\Restful\Application\Routes\ResourceRoute;
+use Drahak\Restful\Application\MethodOptions;
 use Drahak\Restful\Http\Request;
+use Exception;
 use Nette\Application\Application;
 use Nette\Application\BadRequestException as NetteBadRequestException;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse;
-use Nette\Object;
+use Nette\SmartObject;
+use Throwable;
 
 /**
  * MethodHandler
+ *
  * @package Drahak\Restful\Application
  * @author Drahomír Hanák
  */
-class MethodHandler extends Object
+class MethodHandler
 {
+	use SmartObject;
 
 	/** @var IRequest */
 	private $request;
-
 	/** @var IResponse */
 	private $response;
-
 	/** @var MethodOptions */
 	private $methods;
 
@@ -41,6 +43,7 @@ class MethodHandler extends Object
 
 	/**
 	 * On application run
+	 *
 	 * @param Application $application
 	 *
 	 * @throws BadRequestException
@@ -56,10 +59,11 @@ class MethodHandler extends Object
 
 	/**
 	 * On application error
-	 * @param  Application $application 
-	 * @param  \Exception|\Throwable $e
+	 *
+	 * @param Exception|Throwable $e
+	 * @throws BadRequestException
 	 */
-	public function error(Application $application,$e)
+	public function error($e)
 	{
 		if ($e instanceof NetteBadRequestException && $e->getCode() === 404) {
 			$this->checkAllowedMethods();
@@ -81,7 +85,7 @@ class MethodHandler extends Object
 		$allow = implode(', ', $availableMethods);
 		$this->response->setHeader('Allow', $allow);
 		throw BadRequestException::methodNotSupported(
-			'Method not supported. Available methods: ' . $allow);
+			'Method not supported. Available methods: ' . $allow
+		);
 	}
-
 }

@@ -1,23 +1,27 @@
 <?php
+
 namespace Drahak\Restful\Mapping;
 
-use Nette\Object;
-use Nette\Utils\Strings;
 use Drahak\Restful\InvalidStateException;
+use Nette\SmartObject;
+use Nette\Utils\Strings;
 
 /**
  * MapperContext
+ *
  * @package Drahak\Restful\Mapping
  * @author Drahomír Hanák
  */
-class MapperContext extends Object
+class MapperContext
 {
+	use SmartObject;
 
 	/** @var array */
-	protected $services = array();
+	protected $services = [];
 
 	/**
 	 * Add mapper
+	 *
 	 * @param string $contentType
 	 * @param IMapper $mapper
 	 */
@@ -28,6 +32,7 @@ class MapperContext extends Object
 
 	/**
 	 * Get mapper
+	 *
 	 * @param string $contentType in format mimeType[; charset=utf8]
 	 * @return IMapper
 	 *
@@ -41,7 +46,7 @@ class MapperContext extends Object
 		if (!isset($this->services[$contentType])) {
 			throw new InvalidStateException('There is no mapper for Content-Type: ' . $contentType);
 		}
+
 		return $this->services[$contentType];
 	}
-
 }

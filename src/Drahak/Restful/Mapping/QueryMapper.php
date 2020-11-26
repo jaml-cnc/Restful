@@ -1,34 +1,39 @@
 <?php
+
 namespace Drahak\Restful\Mapping;
 
-use Nette\Object;
-use Nette\Http\Url;
-use Nette\Utils\Strings;
+use Nette\SmartObject;
+use Traversable;
 
 /**
  * Query string mapper
+ *
  * @package Drahak\Restful\Mapping
  * @author Drahomír Hanák
  */
-class QueryMapper extends Object implements IMapper
+class QueryMapper implements IMapper
 {
+	use SmartObject;
 
 	/**
 	 * Convert array or Traversable input to string output response
+	 *
 	 * @param array $data
 	 * @param bool $prettyPrint
 	 * @return mixed
 	 */
-	public function stringify($data, $prettyPrint = TRUE)
+	public function stringify($data, $prettyPrint = true)
 	{
-		if ($data instanceof \Traversable) {
-			$data = iterator_to_array($data, TRUE);
+		if ($data instanceof Traversable) {
+			$data = iterator_to_array($data, true);
 		}
+
 		return http_build_query($data, '', '&');
 	}
 
 	/**
 	 * Convert client request data to array or traversable
+	 *
 	 * @param string $data
 	 * @return array
 	 *
@@ -36,10 +41,9 @@ class QueryMapper extends Object implements IMapper
 	 */
 	public function parse($data)
 	{
-		$result = array();
+		$result = [];
 		parse_str($data, $result);
+
 		return $result;
 	}
-
-
 }

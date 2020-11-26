@@ -1,15 +1,16 @@
 <?php
+
 namespace Drahak\Restful\Application\Routes;
 
-use Drahak\Restful;
 use Drahak\Restful\Application\IResourceRouter;
-use Nette\Http;
 use Nette\Application;
-use Nette\Utils\Strings;
 use Nette\Application\Routers\Route;
+use Nette\Http;
+use Nette\Utils\Strings;
 
 /**
  * ResourceRoute
+ *
  * @package Drahak\Restful\Routes
  * @author Drahomír Hanák
  *
@@ -17,12 +18,10 @@ use Nette\Application\Routers\Route;
  */
 class ResourceRoute extends Route implements IResourceRouter
 {
-
 	/** @var array */
 	protected $actionDictionary;
-
 	/** @var array */
-	private $methodDictionary = array(
+	private $methodDictionary = [
 		Http\IRequest::GET => self::GET,
 		Http\IRequest::POST => self::POST,
 		Http\IRequest::PUT => self::PUT,
@@ -30,21 +29,21 @@ class ResourceRoute extends Route implements IResourceRouter
 		Http\IRequest::DELETE => self::DELETE,
 		'PATCH' => self::PATCH,
 		'OPTIONS' => self::OPTIONS,
-	);
+	];
 
 	/**
 	 * @param string $mask
 	 * @param array|string $metadata
 	 * @param int $flags
 	 */
-	public function __construct($mask, $metadata = array(), $flags = IResourceRouter::GET)
+	public function __construct($mask, $metadata = [], $flags = IResourceRouter::GET)
 	{
-		$this->actionDictionary = array();
+		$this->actionDictionary = [];
 		if (isset($metadata['action']) && is_array($metadata['action'])) {
 			$this->actionDictionary = $metadata['action'];
-			$metadata['action'] = 'default';  
+			$metadata['action'] = 'default';
 		} else {
-			$action = isset($metadata['action']) ? $metadata['action'] : 'default'; 
+			$action = isset($metadata['action']) ? $metadata['action'] : 'default';
 			if (is_string($metadata)) {
 				$metadataParts = explode(':', $metadata);
 				$action = end($metadataParts);
@@ -61,49 +60,56 @@ class ResourceRoute extends Route implements IResourceRouter
 
 	/**
 	 * Is this route mapped to given method
+	 *
 	 * @param int $method
 	 * @return bool
 	 */
-	public function isMethod($method)
+	public function isMethod($method): bool
 	{
-		$common = array(self::CRUD, self::RESTFUL);
+		$common = [self::CRUD, self::RESTFUL];
 		$isActionDefined = $this->actionDictionary && !in_array($method, $common) ?
 			isset($this->actionDictionary[$method]) :
-			TRUE;
+			true;
+
 		return ($this->getFlags() & $method) == $method && $isActionDefined;
 	}
 
 	/**
 	 * Get request method flag
+	 *
 	 * @param Http\IRequest $httpRequest
 	 * @return string|null
 	 */
-	public function getMethod(Http\IRequest $httpRequest)
+	public function getMethod(Http\IRequest $httpRequest): ?string
 	{
 		$method = $httpRequest->getMethod();
 		if (!isset($this->methodDictionary[$method])) {
-			return NULL;
+			return null;
 		}
+
 		return $this->methodDictionary[$method];
 	}
 
 	/**
 	 * Get action dictionary
+	 *
 	 * @return array|NULL
 	 */
-	public function getActionDictionary()
+	public function getActionDictionary(): array
 	{
 		return $this->actionDictionary;
 	}
 
 	/**
 	 * Set action dictionary
+	 *
 	 * @param array|NULL
 	 * @return $this
 	 */
 	public function setActionDictionary($actionDictionary)
 	{
 		$this->actionDictionary = $actionDictionary;
+
 		return $this;
 	}
 
@@ -111,17 +117,17 @@ class ResourceRoute extends Route implements IResourceRouter
 	 * @param Http\IRequest $httpRequest
 	 * @return Application\Request|NULL
 	 */
-	public function match(Http\IRequest $httpRequest)
+	public function match(Http\IRequest $httpRequest): ?array
 	{
 		$appRequest = parent::match($httpRequest);
 		if (!$appRequest) {
-			return NULL;
+			return null;
 		}
 
 		// Check requested method
 		$methodFlag = $this->getMethod($httpRequest);
 		if (!$this->isMethod($methodFlag)) {
-			return NULL;
+			return null;
 		}
 
 		// If there is action dictionary, set method
@@ -137,16 +143,21 @@ class ResourceRoute extends Route implements IResourceRouter
 
 	/**
 	 * Format action name
+	 *
 	 * @param string $action
 	 * @param array $parameters
 	 * @return string
 	 */
 	protected static function formatActionName($action, array $parameters)
 	{
-		return Strings::replace($action, "@\<([0-9a-zA-Z_-]+)\>@i", function($m) use($parameters) {
-			$key = strtolower($m[1]);
-			return isset($parameters[$key]) ? $parameters[$key] : '';
-		});
-	}
+		return Strings::replace(
+			$action,
+			"@\<([0-9a-zA-Z_-]+)\>@i",
+			function ($m) use ($parameters) {
+				$key = strtolower($m[1]);
 
+				return isset($parameters[$key]) ? $parameters[$key] : '';
+			}
+		);
+	}
 }

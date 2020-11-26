@@ -1,57 +1,50 @@
 <?php
+
 namespace Drahak\Restful\Application;
 
 use Drahak\Restful\Application\Responses\BaseResponse;
-use Drahak\Restful\Application\Responses\NullResponse;
 use Drahak\Restful\InvalidArgumentException;
 use Drahak\Restful\InvalidStateException;
 use Drahak\Restful\IResource;
 use Drahak\Restful\Mapping\MapperContext;
-use Drahak\Restful\Utils\RequestFilter;
-use Nette\Utils\Strings;
-use Nette\Http\IResponse;
 use Nette\Http\IRequest;
-use Nette\Http\Url;
-use Nette\Object;
+use Nette\Http\IResponse;
+use Nette\SmartObject;
+use Nette\Utils\Strings;
 
 /**
  * REST ResponseFactory
+ *
  * @package Drahak\Restful
  * @author Drahomír Hanák
  */
-class ResponseFactory extends Object implements IResponseFactory
+class ResponseFactory implements IResponseFactory
 {
+	use SmartObject;
 
 	/** @var IResponse */
 	private $response;
-
 	/** @var IRequest */
 	private $request;
-
 	/** @var MapperContext */
 	private $mapperContext;
-
 	/** @var ICacheValidator */
 	private $cacheValidator;
-
 	/** @var string JSONP request key */
 	private $jsonp;
-
 	/** @var string pretty print key */
 	private $prettyPrintKey = 'prettyPrint';
-        
-        /** @var boolean */
-        private $prettyPrint = TRUE;
-
+	/** @var boolean */
+	private $prettyPrint = true;
 	/** @var array */
-	private $responses = array(
+	private $responses = [
 		IResource::JSON => 'Drahak\Restful\Application\Responses\TextResponse',
 		IResource::JSONP => 'Drahak\Restful\Application\Responses\JsonpResponse',
 		IResource::QUERY => 'Drahak\Restful\Application\Responses\TextResponse',
 		IResource::XML => 'Drahak\Restful\Application\Responses\TextResponse',
 		IResource::FILE => 'Drahak\Restful\Application\Responses\FileResponse',
-		IResource::NULL => 'Drahak\Restful\Application\Responses\NullResponse'
-	);
+		IResource::NULL => 'Drahak\Restful\Application\Responses\NullResponse',
+	];
 
 	/**
 	 * @param IResponse $response
@@ -67,16 +60,19 @@ class ResponseFactory extends Object implements IResponseFactory
 
 	/**
 	 * Set JSONP key
-	 * @param string $jsonp 
+	 *
+	 * @param string $jsonp
 	 */
 	public function setJsonp($jsonp)
 	{
 		$this->jsonp = $jsonp;
+
 		return $this;
 	}
 
 	/**
 	 * Get JSONP key
+	 *
 	 * @return [type] [description]
 	 */
 	public function getJsonp()
@@ -86,26 +82,31 @@ class ResponseFactory extends Object implements IResponseFactory
 
 	/**
 	 * Set pretty print key
-	 * @param string $prettyPrintKey 
+	 *
+	 * @param string $prettyPrintKey
 	 */
 	public function setPrettyPrintKey($prettyPrintKey)
 	{
 		$this->prettyPrintKey = $prettyPrintKey;
+
 		return $this;
 	}
-        
-        /**
+
+	/**
 	 * Set pretty print
-	 * @param string $prettyPrint 
+	 *
+	 * @param string $prettyPrint
 	 */
 	public function setPrettyPrint($prettyPrint)
 	{
 		$this->prettyPrint = $prettyPrint;
+
 		return $this;
 	}
 
 	/**
 	 * Register new response type to factory
+	 *
 	 * @param string $mimeType
 	 * @param string $responseClass
 	 * @return $this
@@ -119,11 +120,13 @@ class ResponseFactory extends Object implements IResponseFactory
 		}
 
 		$this->responses[$mimeType] = $responseClass;
+
 		return $this;
 	}
 
 	/**
 	 * Unregister API response from factory
+	 *
 	 * @param string $mimeType
 	 */
 	public function unregisterResponse($mimeType)
@@ -133,27 +136,30 @@ class ResponseFactory extends Object implements IResponseFactory
 
 	/**
 	 * Set HTTP response
+	 *
 	 * @param IResponse $response
 	 * @return ResponseFactory
 	 */
 	public function setHttpResponse(IResponse $response)
 	{
 		$this->response = $response;
+
 		return $this;
 	}
 
 	/**
 	 * Create new api response
+	 *
 	 * @param IResource $resource
 	 * @param string|null $contentType
 	 * @return IResponse
 	 *
 	 * @throws InvalidStateException
 	 */
-	public function create(IResource $resource, $contentType = NULL)
+	public function create(IResource $resource, $contentType = null)
 	{
-		if ($contentType === NULL) {
-			$contentType = $this->jsonp === FALSE || !$this->request->getQuery($this->jsonp) ?
+		if ($contentType === null) {
+			$contentType = $this->jsonp === false || !$this->request->getQuery($this->jsonp) ?
 				$this->getPreferredContentType($this->request->getHeader('Accept')) :
 				IResource::JSONP;
 		}
@@ -168,65 +174,76 @@ class ResponseFactory extends Object implements IResponseFactory
 
 		if (!$resource->hasData()) {
 			$this->response->setCode(204); // No content
+
 			return new $this->responses[IResource::NULL];
 		}
 
 		$responseClass = $this->responses[$contentType];
-		$response = new $responseClass($resource->getData(), $this->mapperContext->getMapper($contentType), $contentType);
+		$response = new $responseClass(
+			$resource->getData(), $this->mapperContext->getMapper($contentType), $contentType
+		);
 		if ($response instanceof BaseResponse) {
 			$response->setPrettyPrint($this->isPrettyPrint());
 		}
+
 		return $response;
 	}
 
 	/**
 	 * Is given content type acceptable for response
-	 * @param  string  $contentType 
-	 * @return boolean              
+	 *
+	 * @param string $contentType
+	 * @return boolean
 	 */
 	public function isAcceptable($contentType)
 	{
 		try {
 			$this->getPreferredContentType($contentType);
-			return TRUE;
+
+			return true;
 		} catch (InvalidStateException $e) {
-			return FALSE;
+			return false;
 		}
 	}
 
 	/**
 	 * Is pretty print enabled
-	 * @param  IRequest $request 
-	 * @return boolean           
+	 *
+	 * @param IRequest $request
+	 * @return boolean
 	 */
 	protected function isPrettyPrint()
 	{
 		$prettyPrintKey = $this->request->getQuery($this->prettyPrintKey);
 		if ($prettyPrintKey === 'false') {
-			return FALSE;
+			return false;
 		}
-                if ($prettyPrintKey === 'true') {
-                        return TRUE;
-                }
+		if ($prettyPrintKey === 'true') {
+			return true;
+		}
+
 		return $this->prettyPrint;
 	}
 
-        /**
+	/**
 	 * Get preferred request content type
-	 * @param  string $contentType may be separed with comma
+	 *
+	 * @param string $contentType may be separated with comma
 	 * @return string
-	 * 
+	 *
 	 * @throws  InvalidStateException If Accept header is unknown
 	 */
 	protected function getPreferredContentType($contentType)
 	{
 		$accept = explode(',', $contentType);
 		$acceptableTypes = array_keys($this->responses);
-		if(!$contentType) {
+		if (!$contentType) {
 			return $acceptableTypes[0];
 		}
 		foreach ($accept as $mimeType) {
-			if ($mimeType === '*/*') return $acceptableTypes[0];
+			if ($mimeType === '*/*') {
+				return $acceptableTypes[0];
+			}
 			foreach ($acceptableTypes as $formatMime) {
 				if (empty($formatMime)) {
 					continue;
@@ -238,5 +255,4 @@ class ResponseFactory extends Object implements IResponseFactory
 		}
 		throw new InvalidStateException('Unknown Accept header: ' . $contentType);
 	}
-
 }

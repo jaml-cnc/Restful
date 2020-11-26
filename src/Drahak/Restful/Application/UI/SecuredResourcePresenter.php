@@ -1,17 +1,17 @@
 <?php
+
 namespace Drahak\Restful\Application\UI;
 
 use Drahak\Restful\Security\Process\BasicAuthentication;
-use Nette\Application;
 
 /**
  * SecuredResourcePresenter
+ *
  * @package Drahak\Restful\Application
  * @author Drahomír Hanák
  */
 class SecuredResourcePresenter extends ResourcePresenter
 {
-
 	/** @var BasicAuthentication */
 	private $basicAuthentication;
 
@@ -31,6 +31,4 @@ class SecuredResourcePresenter extends ResourcePresenter
 		parent::startup();
 		$this->authentication->setAuthProcess($this->basicAuthentication);
 	}
-
-
 }

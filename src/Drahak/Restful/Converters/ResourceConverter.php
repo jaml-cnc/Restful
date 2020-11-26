@@ -1,22 +1,26 @@
 <?php
+
 namespace Drahak\Restful\Converters;
 
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * ResourceConverter
+ *
  * @package Drahak\Restful\Converters
  *
  * @property-read IConverter[] $converters
  */
-class ResourceConverter extends Object
+class ResourceConverter
 {
+	use SmartObject;
 
 	/** @var IConverter[] */
-	private $converters = array();
+	private $converters = [];
 
 	/**
 	 * Get converters
+	 *
 	 * @return IConverter[]
 	 */
 	public function getConverters()
@@ -26,17 +30,20 @@ class ResourceConverter extends Object
 
 	/**
 	 * Add resource data converter to list
+	 *
 	 * @param IConverter $converter
 	 * @return ResourceConverter
 	 */
 	public function addConverter(IConverter $converter)
 	{
 		$this->converters[] = $converter;
+
 		return $this;
 	}
 
 	/**
 	 * Converts data from resource using converters
+	 *
 	 * @param array $data
 	 * @return array
 	 */
@@ -49,5 +56,4 @@ class ResourceConverter extends Object
 
 		return $data;
 	}
-
 }

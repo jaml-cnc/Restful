@@ -1,41 +1,41 @@
 <?php
+
 namespace Drahak\Restful\Application\Responses;
 
 use Drahak;
-use Drahak\Restful\InvalidArgumentException;
 use Drahak\Restful\Mapping\IMapper;
 use Nette\Application\IResponse;
-use Nette\Http\IRequest;
-use Nette\Object;
+use Nette\SmartObject;
+use stdClass;
+use Traversable;
 
 /**
  * BaseResponse
+ *
  * @package Drahak\Restful\Application\Responses
  * @author Drahomír Hanák
  *
- *  @property-read string $contentType
- *  @property-write IMapper $mapper
+ * @property-read string $contentType
+ * @property-write IMapper $mapper
  */
-abstract class BaseResponse extends Object implements IResponse
+abstract class BaseResponse implements IResponse
 {
+	use SmartObject;
 
-	/** @var array|\stdClass|\Traversable */
+	/** @var array|stdClass|Traversable */
 	protected $data;
-
 	/** @var IMapper */
 	protected $mapper;
-
 	/** @var string */
 	protected $contentType;
-
 	/** @var boolean */
-	private $prettyPrint = TRUE;
+	private $prettyPrint = true;
 
 	/**
 	 * @param null $contentType
 	 * @param IMapper $mapper
 	 */
-	public function __construct(IMapper $mapper, $contentType = NULL)
+	public function __construct(IMapper $mapper, $contentType = null)
 	{
 		$this->contentType = $contentType;
 		$this->mapper = $mapper;
@@ -43,17 +43,20 @@ abstract class BaseResponse extends Object implements IResponse
 
 	/**
 	 * Set pretty print
-	 * @param boolean $pretty 
+	 *
+	 * @param boolean $pretty
 	 */
-	public function setPrettyPrint($pretty) 
+	public function setPrettyPrint(bool $pretty)
 	{
 		$this->prettyPrint = (bool)$pretty;
+
 		return $this;
 	}
 
 	/**
 	 * Is pretty print enabled
-	 * @return bool 
+	 *
+	 * @return bool
 	 */
 	public function isPrettyPrint()
 	{
@@ -62,6 +65,7 @@ abstract class BaseResponse extends Object implements IResponse
 
 	/**
 	 * Get response content type
+	 *
 	 * @return string
 	 */
 	public function getContentType()
@@ -71,7 +75,8 @@ abstract class BaseResponse extends Object implements IResponse
 
 	/**
 	 * Get response data
-	 * @return array|\stdClass|\Traversable
+	 *
+	 * @return array|stdClass|Traversable
 	 */
 	public function getData()
 	{
@@ -80,13 +85,14 @@ abstract class BaseResponse extends Object implements IResponse
 
 	/**
 	 * Set mapper
+	 *
 	 * @param IMapper $mapper
 	 * @return BaseResponse
 	 */
 	public function setMapper(IMapper $mapper)
 	{
 		$this->mapper = $mapper;
+
 		return $this;
 	}
-
 }

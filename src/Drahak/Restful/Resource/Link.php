@@ -1,19 +1,22 @@
 <?php
+
 namespace Drahak\Restful\Resource;
 
-use Nette\Object;
 use Drahak\Restful\IResource;
+use Nette\SmartObject;
 
 /**
  * Link representation in resource
+ *
  * @package Drahak\Restful\Resource
  * @author Drahomír Hanák
  *
  * @property-read string $href
  * @property-read string $rel
  */
-class Link extends Object implements IResource
+class Link implements IResource
 {
+	use SmartObject;
 
 	/** Link pointing on self */
 	const SELF = 'self';
@@ -23,10 +26,8 @@ class Link extends Object implements IResource
 	const PREVIOUS = 'prev';
 	/** Link pointing on last page */
 	const LAST = 'last';
-
 	/** @var string */
 	private $href;
-
 	/** @var string */
 	private $rel;
 
@@ -42,6 +43,7 @@ class Link extends Object implements IResource
 
 	/**
 	 * Get link URL
+	 *
 	 * @return string
 	 */
 	public function getHref()
@@ -51,6 +53,7 @@ class Link extends Object implements IResource
 
 	/**
 	 * Get link rel
+	 *
 	 * @return string
 	 */
 	public function getRel()
@@ -60,6 +63,7 @@ class Link extends Object implements IResource
 
 	/**
 	 * Create link with new href
+	 *
 	 * @param string $href
 	 * @return Link
 	 */
@@ -70,6 +74,7 @@ class Link extends Object implements IResource
 
 	/**
 	 * Create link with new rel
+	 *
 	 * @param string $rel
 	 * @return Link
 	 */
@@ -80,6 +85,7 @@ class Link extends Object implements IResource
 
 	/**
 	 * Converts link to string
+	 *
 	 * @return string
 	 */
 	public function __toString()
@@ -91,15 +97,14 @@ class Link extends Object implements IResource
 
 	/**
 	 * Get element value or array data
+	 *
 	 * @return mixed
 	 */
 	public function getData()
 	{
-		return array(
+		return [
 			'href' => $this->href,
-			'rel' => $this->rel
-		);
+			'rel' => $this->rel,
+		];
 	}
-
-
 }

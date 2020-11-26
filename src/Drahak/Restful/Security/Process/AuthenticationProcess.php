@@ -1,19 +1,23 @@
 <?php
+
 namespace Drahak\Restful\Security\Process;
 
-use Nette\Object;
 use Drahak\Restful\Http\IInput;
+use Nette\SmartObject;
 
 /**
  * Request AuthenticationProcess template
+ *
  * @package Drahak\Restful\Security\Process
  * @author Drahomír Hanák
  */
-abstract class AuthenticationProcess extends Object
+abstract class AuthenticationProcess
 {
+	use SmartObject;
 
 	/**
 	 * Authenticate process
+	 *
 	 * @param IInput $input
 	 * @return bool
 	 */
@@ -21,11 +25,13 @@ abstract class AuthenticationProcess extends Object
 	{
 		$this->authRequestData($input);
 		$this->authRequestTimeout($input);
-		return TRUE;
+
+		return true;
 	}
 
 	/**
 	 * Authenticate request data
+	 *
 	 * @param IInput $input
 	 * @return bool
 	 */
@@ -33,9 +39,9 @@ abstract class AuthenticationProcess extends Object
 
 	/**
 	 * Authenticate request timeout
+	 *
 	 * @param IInput $input
 	 * @return bool
 	 */
 	abstract protected function authRequestTimeout(IInput $input);
-
 }

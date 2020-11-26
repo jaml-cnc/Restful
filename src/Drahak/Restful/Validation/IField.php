@@ -1,23 +1,26 @@
 <?php
+
 namespace Drahak\Restful\Validation;
 
 /**
  * Validation field interface
+ *
  * @package Drahak\Restful\Validation
  * @author Drahomír Hanák
  */
 interface IField
 {
-
 	/**
 	 * Add rule to validation field
+	 *
 	 * @param string $expression or identifier
 	 * @return IField
 	 */
-	public function addRule($expression);
+	public function addRule(string $expression): IField;
 
 	/**
 	 * Validate field
+	 *
 	 * @param mixed $value
 	 * @return mixed
 	 */
@@ -25,8 +28,8 @@ interface IField
 
 	/**
 	 * Get field name
+	 *
 	 * @return string
 	 */
-	public function getName();
-
+	public function getName(): string;
 }

@@ -1,22 +1,23 @@
 <?php
+
 namespace Drahak\Restful;
 
 use Drahak\Restful\Converters\ResourceConverter;
-use Drahak\Restful\Utils\Strings;
 use Nette\Http\IRequest;
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * ResourceFactory
+ *
  * @package Drahak\Restful
  * @author Drahomír Hanák
  */
-class ResourceFactory extends Object implements IResourceFactory
+class ResourceFactory implements IResourceFactory
 {
+	use SmartObject;
 
 	/** @var IRequest */
 	private $request;
-
 	/** @var ResourceConverter */
 	private $resourceConverter;
 
@@ -32,14 +33,14 @@ class ResourceFactory extends Object implements IResourceFactory
 
 	/**
 	 * Create new API resource
+	 *
 	 * @param array $data
 	 * @return IResource
 	 *
 	 * @throws  InvalidStateException If Accept header is unknown
 	 */
-	public function create(array $data = array())
+	public function create(array $data = [])
 	{
 		return new ConvertedResource($this->resourceConverter, $data);
 	}
-
 }
