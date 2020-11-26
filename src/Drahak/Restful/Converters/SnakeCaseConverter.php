@@ -4,6 +4,7 @@ namespace Drahak\Restful\Converters;
 
 use Drahak\Restful\Utils\Strings;
 use Nette\SmartObject;
+use Traversable;
 
 /**
  * SnakeCaseConverter
@@ -31,11 +32,11 @@ class SnakeCaseConverter implements IConverter
 	/**
 	 * Convert array keys to snake case
 	 *
-	 * @param array|\Traversable $array
+	 * @param array|Traversable $array
 	 */
 	private function convertToSnake(&$array)
 	{
-		if ($array instanceof \Traversable) {
+		if ($array instanceof Traversable) {
 			$array = iterator_to_array($array);
 		}
 
@@ -44,7 +45,7 @@ class SnakeCaseConverter implements IConverter
 			unset($array[$key]);
 
 			$transformedKey = Strings::toSnakeCase($key);
-			if (is_array($value) || $value instanceof \Traversable) {
+			if (is_array($value) || $value instanceof Traversable) {
 				$this->convertToSnake($value);
 			}
 			$array[$transformedKey] = $value;

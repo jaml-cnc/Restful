@@ -26,8 +26,12 @@
 		"nette/reflection": "^2.0",
 		"nette/robot-loader": "^3.0",
 		"nette/security": "^3.0",
-		"nette/utils": "^3.0"
-	},
+		"nette/utils": "^3.0",
+		"tracy/tracy": "^2.7",
+        "ext-dom": "*",
+		"ext-libxml": "*",
+        "ext-simplexml": "*"
+    },
 	"require-dev": {
 		"drahak/oauth2": "dev-master",
 		"nette/tester": "^1.3",

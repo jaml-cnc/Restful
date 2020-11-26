@@ -1,4 +1,5 @@
 <?php
+
 namespace Drahak\Restful;
 
 /**
@@ -9,7 +10,7 @@ class LogicException extends \LogicException
 }
 
 /**
- * Thrown when invalid argumnet given to method, function or constructor
+ * Thrown when invalid argument given to method, function or constructor
  */
 class InvalidArgumentException extends LogicException
 {

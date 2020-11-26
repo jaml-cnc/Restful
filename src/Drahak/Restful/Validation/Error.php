@@ -33,7 +33,7 @@ class Error implements IteratorAggregate
 	 * @param string $message
 	 * @param int $code
 	 */
-	public function __construct($field, $message, $code)
+	public function __construct(string $field, string $message, int $code)
 	{
 		$this->field = $field;
 		$this->message = $message;

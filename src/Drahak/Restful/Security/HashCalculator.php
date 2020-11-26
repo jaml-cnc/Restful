@@ -56,7 +56,7 @@ class HashCalculator implements IAuthTokenCalculator
 	 * @param string $privateKey
 	 * @return IAuthTokenCalculator
 	 */
-	public function setPrivateKey($privateKey)
+	public function setPrivateKey(string $privateKey): IAuthTokenCalculator
 	{
 		$this->privateKey = $privateKey;
 
@@ -69,9 +69,9 @@ class HashCalculator implements IAuthTokenCalculator
 	 * @param IInput $input
 	 * @return string
 	 *
-	 * @throws \Drahak\Restful\InvalidStateException
+	 * @throws InvalidStateException
 	 */
-	public function calculate(IInput $input)
+	public function calculate(IInput $input): string
 	{
 		if (!$this->privateKey) {
 			throw new InvalidStateException('Private key is not set');

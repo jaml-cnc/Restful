@@ -4,6 +4,7 @@ namespace Drahak\Restful\Converters;
 
 use Drahak\Restful\Utils\Strings;
 use Nette\SmartObject;
+use Traversable;
 
 /**
  * PascalCaseConverter
@@ -31,11 +32,11 @@ class PascalCaseConverter implements IConverter
 	/**
 	 * Convert array keys to camel case
 	 *
-	 * @param array|\Traversable $array
+	 * @param array|Traversable $array
 	 */
 	private function convertToPascal(&$array)
 	{
-		if ($array instanceof \Traversable) {
+		if ($array instanceof Traversable) {
 			$array = iterator_to_array($array);
 		}
 
@@ -44,7 +45,7 @@ class PascalCaseConverter implements IConverter
 			unset($array[$key]);
 
 			$transformedKey = Strings::toPascalCase($key);
-			if (is_array($value) || $value instanceof \Traversable) {
+			if (is_array($value) || $value instanceof Traversable) {
 				$this->convertToPascal($value);
 			}
 			$array[$transformedKey] = $value;

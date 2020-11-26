@@ -4,10 +4,12 @@ namespace Drahak\Restful;
 
 use ArrayAccess;
 use ArrayIterator;
+use Exception;
 use IteratorAggregate;
 use Nette\MemberAccessException;
 use Nette\SmartObject;
 use Nette\Utils\Json;
+use Nette\Utils\JsonException;
 use Serializable;
 
 /**
@@ -60,6 +62,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 	 * Serialize result set
 	 *
 	 * @return string
+	 * @throws JsonException
 	 */
 	public function serialize()
 	{
@@ -70,6 +73,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 	 * Unserialize Resource
 	 *
 	 * @param string $serialized
+	 * @throws JsonException
 	 */
 	public function unserialize($serialized)
 	{
@@ -136,7 +140,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 	 * @param string $name
 	 *
 	 * @return mixed
-	 * @throws \Exception|\Nette\MemberAccessException
+	 * @throws Exception|MemberAccessException
 	 */
 	public function &__get($name)
 	{
@@ -180,7 +184,7 @@ class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResourc
 	 * Magic unset from $this->data
 	 *
 	 * @param string $name
-	 * @throws \Exception|\Nette\MemberAccessException
+	 * @throws Exception|MemberAccessException
 	 */
 	public function __unset($name)
 	{

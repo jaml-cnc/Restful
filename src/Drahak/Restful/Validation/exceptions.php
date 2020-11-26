@@ -1,18 +1,19 @@
 <?php
+
 namespace Drahak\Restful\Validation;
 
+use Drahak\Restful\LogicException;
 use Exception;
 use Nette\Utils\Strings;
-use Drahak\Restful\LogicException;
 
 /**
  * ValidationException is thrown when validation problem appears
+ *
  * @package Drahak\Restful\Validation
  * @author Drahomír Hanák
  */
 class ValidationException extends LogicException
 {
-
 	/** @var string */
 	protected $field;
 
@@ -22,7 +23,7 @@ class ValidationException extends LogicException
 	 * @param int $code
 	 * @param Exception $previous
 	 */
-	public function __construct($field, $message = "", $code = 0, Exception $previous = null)
+	public function __construct(string $field, $message = "", $code = 0, Exception $previous = null)
 	{
 		parent::__construct($message, $code, $previous);
 		$this->field = $field;
@@ -30,6 +31,7 @@ class ValidationException extends LogicException
 
 	/**
 	 * Get validation field name
+	 *
 	 * @return string
 	 */
 	public function getField()
@@ -39,13 +41,20 @@ class ValidationException extends LogicException
 
 	/**
 	 * Validation exception simple factory
+	 *
 	 * @param Rule $rule
-	 * @param mixed $value 
+	 * @param mixed $value
 	 * @return ValidationException
 	 */
-	public static function createFromRule(Rule $rule, $value = NULL)
+	public static function createFromRule(Rule $rule, $value = null)
 	{
-		return new self($rule->getField(), ($value ? "'" . Strings::truncate($value, 60) .  "' is invalid value: " : '') . vsprintf($rule->getMessage(), $rule->getArgument()), $rule->getCode());
+		return new self(
+			$rule->getField(),
+			($value ? "'" . Strings::truncate($value, 60) . "' is invalid value: " : '') . vsprintf(
+				$rule->getMessage(),
+				$rule->getArgument()
+			),
+			$rule->getCode()
+		);
 	}
-
 }

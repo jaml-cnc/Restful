@@ -19,6 +19,6 @@ interface IAnnotationParser
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function parse($reflection);
+	public function parse(Reflector $reflection);
 
 }

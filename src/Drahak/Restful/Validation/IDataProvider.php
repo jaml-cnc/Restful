@@ -14,24 +14,24 @@ interface IDataProvider
 	 * @param string $name
 	 * @return IField
 	 */
-	public function field($name);
+	public function field(string $name): IField;
 
 	/**
 	 * Validate data
 	 * @return array
 	 */
-	public function validate();
+	public function validate(): array;
 
 	/**
 	 * Is input valid
 	 * @return bool
 	 */
-	public function isValid();
+	public function isValid(): bool;
 
 	/**
 	 * Get validation schema
 	 * @return IValidationScope
 	 */
-	public function getValidationScope();
+	public function getValidationScope(): IValidationScope;
 
 }

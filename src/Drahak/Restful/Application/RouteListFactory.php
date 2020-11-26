@@ -59,9 +59,8 @@ class RouteListFactory implements IRouteListFactory
 	 * Set default module of created routes
 	 *
 	 * @param string $module
-	 * @return ResourceRoute
 	 */
-	public function setModule($module)
+	public function setModule(string $module): self
 	{
 		$this->module = $module;
 
@@ -72,13 +71,12 @@ class RouteListFactory implements IRouteListFactory
 	 * Set default routes URL mask prefix
 	 *
 	 * @param string $prefix
-	 * @return RouteListFactory
 	 */
-	public function setPrefix($prefix)
+	public function setPrefix(string $prefix): self
 	{
 		$this->prefix = $prefix;
 
-		return $prefix;
+		return $this;
 	}
 
 	/**

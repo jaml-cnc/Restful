@@ -1,9 +1,9 @@
 <?php
 namespace Drahak\Restful\Http;
 
-use Nette\Http\RequestFactory;
-use Nette\Http\Request;
 use Nette\Http\IRequest;
+use Nette\Http\Request;
+use Nette\Http\RequestFactory;
 
 /**
  * Api request factory
@@ -34,19 +34,21 @@ class ApiRequestFactory
 	 */
 	public function createHttpRequest()
 	{
-		$request = $this->factory->createHttpRequest();
+		$request = $this->factory->fromGlobals();
 		$url = $request->getUrl();
 		$url->setQuery($request->getQuery());
 
 		return new Request(
-			$url, NULL, $request->getPost(), $request->getFiles(), $request->getCookies(), $request->getHeaders(),
+			$url, $request->getPost(), $request->getFiles(), $request->getCookies(), $request->getHeaders(),
 			$this->getPreferredMethod($request), $request->getRemoteAddress(), null,
-			function () use ($request) { return $request->getRawBody(); }
+			function () use ($request) {
+				return $request->getRawBody();
+			}
 		);
 	}
 
 	/**
-	 * Get prederred method 
+	 * Get preferred method
 	 * @param  IRequest $request 
 	 * @return string            
 	 */

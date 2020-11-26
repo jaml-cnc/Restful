@@ -4,6 +4,7 @@ namespace Drahak\Restful\Converters;
 
 use Drahak\Restful\Utils\Strings;
 use Nette\SmartObject;
+use Traversable;
 
 /**
  * CamelCaseConverter
@@ -31,11 +32,11 @@ class CamelCaseConverter implements IConverter
 	/**
 	 * Convert array keys to camel case
 	 *
-	 * @param array|\Traversable $array
+	 * @param array|Traversable $array
 	 */
 	private function convertToCamel(&$array)
 	{
-		if ($array instanceof \Traversable) {
+		if ($array instanceof Traversable) {
 			$array = iterator_to_array($array);
 		}
 
@@ -44,7 +45,7 @@ class CamelCaseConverter implements IConverter
 			unset($array[$key]);
 
 			$transformedKey = Strings::toCamelCase($key);
-			if (is_array($value) || $value instanceof \Traversable) {
+			if (is_array($value) || $value instanceof Traversable) {
 				$this->convertToCamel($value);
 			}
 			$array[$transformedKey] = $value;

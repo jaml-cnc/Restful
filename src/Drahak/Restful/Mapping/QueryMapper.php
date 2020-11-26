@@ -3,6 +3,7 @@
 namespace Drahak\Restful\Mapping;
 
 use Nette\SmartObject;
+use Traversable;
 
 /**
  * Query string mapper
@@ -23,7 +24,7 @@ class QueryMapper implements IMapper
 	 */
 	public function stringify($data, $prettyPrint = true)
 	{
-		if ($data instanceof \Traversable) {
+		if ($data instanceof Traversable) {
 			$data = iterator_to_array($data, true);
 		}
 

@@ -25,7 +25,7 @@ class ValidationScopeFactory implements IValidationScopeFactory
 
 	/**
 	 * Validation schema factory
-	 * @return \Drahak\Restful\Validation\IValidationScope
+	 * @return IValidationScope
 	 */
 	public function create()
 	{

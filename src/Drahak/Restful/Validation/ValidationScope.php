@@ -3,8 +3,8 @@
 namespace Drahak\Restful\Validation;
 
 use Nette\SmartObject;
+use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
-use Nette\Utils\Validators;
 
 /**
  * ValidationScope
@@ -39,7 +39,7 @@ class ValidationScope implements IValidationScope
 	 * @param string $name
 	 * @return IField
 	 */
-	public function field($name)
+	public function field($name): IField
 	{
 		if (!isset($this->fields[$name])) {
 			$this->fields[$name] = $this->createField($name);
@@ -54,7 +54,7 @@ class ValidationScope implements IValidationScope
 	 * @param array $data
 	 * @return Error[]
 	 */
-	public function validate(array $data)
+	public function validate(array $data): Error
 	{
 		$errors = [];
 		/** @var IField $field */
@@ -89,7 +89,7 @@ class ValidationScope implements IValidationScope
 	{
 		$errors = [];
 
-		if (Validators::isList($data) && count($data)) {
+		if (Arrays::isList($data) && count($data)) {
 			foreach ($data as $item) {
 				$newErrors = $this->validateDeeply($field, $item, $path);
 				$errors = array_merge($errors, $newErrors);

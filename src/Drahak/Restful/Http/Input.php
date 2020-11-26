@@ -7,7 +7,9 @@ use Drahak\Restful\Validation\IDataProvider;
 use Drahak\Restful\Validation\IField;
 use Drahak\Restful\Validation\IValidationScope;
 use Drahak\Restful\Validation\IValidationScopeFactory;
+use Exception;
 use IteratorAggregate;
+use Nette\MemberAccessException;
 use Nette\SmartObject;
 
 /**
@@ -70,15 +72,15 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 	 * @param string $name
 	 * @return mixed
 	 *
-	 * @throws \Exception|\Nette\MemberAccessException
+	 * @throws Exception|MemberAccessException
 	 */
-	public function &__get($name)
+	public function &__get(string $name)
 	{
 		$data = $this->getData();
 		if (array_key_exists($name, $data)) {
 			return $data[$name];
 		}
-		throw new \Nette\MemberAccessException(
+		throw new MemberAccessException(
 			'Cannot read an undeclared property ' . get_class($this) . '::$' . $name . '.'
 		);
 	}
@@ -87,7 +89,7 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 	 * @param string $name
 	 * @return bool
 	 */
-	public function __isset($name)
+	public function __isset(string $name)
 	{
 		$data = $this->getData();
 
@@ -99,7 +101,7 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 	/**
 	 * Get input data iterator
 	 *
-	 * @return InputIterator
+	 * @return ArrayIterator
 	 */
 	public function getIterator()
 	{
@@ -114,7 +116,7 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 	 * @param string $name
 	 * @return IField
 	 */
-	public function field($name)
+	public function field(string $name): IField
 	{
 		return $this->getValidationScope()->field($name);
 	}
@@ -124,9 +126,10 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 	 *
 	 * @return array
 	 */
-	public function validate()
+	public function validate(): array
 	{
-		return $this->getValidationScope()->validate($this->getData());
+		$error = $this->getValidationScope()->validate($this->getData());
+		return $error->toArray();
 	}
 
 	/**
@@ -134,7 +137,7 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 	 *
 	 * @return bool
 	 */
-	public function isValid()
+	public function isValid(): bool
 	{
 		return !$this->validate();
 	}
@@ -144,7 +147,7 @@ class Input implements IteratorAggregate, IInput, IDataProvider
 	 *
 	 * @return IValidationScope
 	 */
-	public function getValidationScope()
+	public function getValidationScope(): IValidationScope
 	{
 		if (!$this->validationScope) {
 			$this->validationScope = $this->validationScopeFactory->create();

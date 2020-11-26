@@ -3,6 +3,7 @@
 namespace Drahak\Restful\Converters;
 
 use DateTime;
+use DateTimeInterface;
 use Nette\SmartObject;
 use Traversable;
 
@@ -17,7 +18,7 @@ class DateTimeConverter implements IConverter
 	use SmartObject;
 
 	/** DateTime format */
-	private $format = 'c';
+	private $format;
 
 	/**
 	 * @param string $format of date time
@@ -35,21 +36,19 @@ class DateTimeConverter implements IConverter
 	 */
 	public function convert(array $resource)
 	{
-		$data = $this->parseDateTimeToString($resource);
-
-		return $data;
+		return $this->parseDateTimeToString($resource);
 	}
 
 	/**
 	 * @param $array
-	 * @return array
+	 * @return array|string
 	 */
-	private function parseDateTimeToString($array)
+	private function parseDateTimeToString($array): array
 	{
 		if (!is_array($array)) {
 			if ($array instanceof DateTime || interface_exists(
 					'DateTimeInterface'
-				) && $array instanceof \DateTimeInterface) {
+				) && $array instanceof DateTimeInterface) {
 				return $array->format($this->format);
 			}
 

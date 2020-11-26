@@ -5,6 +5,7 @@ namespace Drahak\Restful\Mapping;
 use Nette\SmartObject;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
+use Traversable;
 
 /**
  * JsonMapper
@@ -19,7 +20,7 @@ class JsonMapper implements IMapper
 	/**
 	 * Convert array or Traversable input to string output response
 	 *
-	 * @param array|\Traversable $data
+	 * @param array|Traversable $data
 	 * @param bool $prettyPrint
 	 * @return mixed
 	 *
@@ -42,7 +43,7 @@ class JsonMapper implements IMapper
 	 *
 	 * @throws MappingException
 	 */
-	public function parse($data)
+	public function parse($data): array
 	{
 		try {
 			return Json::decode($data, Json::FORCE_ARRAY);

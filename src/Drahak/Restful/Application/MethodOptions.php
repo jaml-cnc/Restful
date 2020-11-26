@@ -2,10 +2,10 @@
 
 namespace Drahak\Restful\Application;
 
-use Nette\Application\IRouter;
 use Nette\Http\IRequest;
 use Nette\Http\Request;
 use Nette\Http\UrlScript;
+use Nette\Routing\Router;
 use Nette\SmartObject;
 use Traversable;
 
@@ -19,7 +19,7 @@ class MethodOptions
 {
 	use SmartObject;
 
-	/** @var IRouter */
+	/** @var Router */
 	private $router;
 	/** @var array */
 	private $methods = [
@@ -33,9 +33,9 @@ class MethodOptions
 	];
 
 	/**
-	 * @param IRouter $router
+	 * @param Router $router
 	 */
-	public function __construct(IRouter $router)
+	public function __construct(Router $router)
 	{
 		$this->router = $router;
 	}
@@ -54,11 +54,11 @@ class MethodOptions
 	/**
 	 * Recursively checks available methods
 	 *
-	 * @param IRouter $router
+	 * @param Router $router
 	 * @param UrlScript $url
 	 * @return string[]
 	 */
-	private function checkAvailableMethods(IRouter $router, UrlScript $url)
+	private function checkAvailableMethods(Router $router, UrlScript $url)
 	{
 		$methods = [];
 		foreach ($router as $route) {
@@ -98,14 +98,13 @@ class MethodOptions
 	 */
 	protected function getMethodFlag(IResourceRouter $route)
 	{
-		$methodFlag = null;
 		foreach ($this->methods as $flag => $requestMethod) {
 			if ($route->isMethod($flag)) {
 				return $flag;
 			}
 		}
 
-		return $methodFlag;
+		return null;
 	}
 
 	/**
@@ -122,18 +121,5 @@ class MethodOptions
 			null, null, null, null, null,
 			$this->methods[$methodFlag]
 		);
-	}
-
-	/**
-	 * Remove override param from query URL parameters
-	 *
-	 * @param array $query
-	 * @return string
-	 */
-	private function removeOverrideParam(array $query)
-	{
-		unset($query['X-HTTP-Method-Override']);
-
-		return $query;
 	}
 }

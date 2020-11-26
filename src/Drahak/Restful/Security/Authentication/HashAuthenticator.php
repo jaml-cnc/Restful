@@ -32,7 +32,7 @@ class HashAuthenticator implements IRequestAuthenticator
 	 * @param IRequest $request
 	 * @param IAuthTokenCalculator $calculator
 	 */
-	public function __construct($privateKey, IRequest $request, IAuthTokenCalculator $calculator)
+	public function __construct(string $privateKey, IRequest $request, IAuthTokenCalculator $calculator)
 	{
 		$this->privateKey = $privateKey;
 		$this->request = $request;

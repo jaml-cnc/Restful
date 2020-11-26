@@ -228,7 +228,7 @@ class ResponseFactory implements IResponseFactory
 	/**
 	 * Get preferred request content type
 	 *
-	 * @param string $contentType may be separed with comma
+	 * @param string $contentType may be separated with comma
 	 * @return string
 	 *
 	 * @throws  InvalidStateException If Accept header is unknown

@@ -32,7 +32,7 @@ final class CachedRouteListFactory implements IRouteListFactory
 	 * @param IRouteListFactory $routeListFactory
 	 * @param IStorage $storage
 	 */
-	public function __construct($presentersRoot, IRouteListFactory $routeListFactory, IStorage $storage)
+	public function __construct(string $presentersRoot, IRouteListFactory $routeListFactory, IStorage $storage)
 	{
 		$this->presentersRoot = $presentersRoot;
 		$this->routeListFactory = $routeListFactory;

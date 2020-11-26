@@ -3,6 +3,7 @@
 namespace Drahak\Restful\Mapping;
 
 use DOMDocument;
+use DOMNode;
 use Drahak\Restful\InvalidArgumentException;
 use Nette\SmartObject;
 use Nette\Utils\Arrays;
@@ -149,7 +150,7 @@ class XmlMapper implements IMapper
 			unset($value['@attributes']);
 		}
 		if (count($value) === 0) {
-			return '';
+			return [];
 		}
 
 		foreach ($value as $key => $node) {
@@ -164,10 +165,10 @@ class XmlMapper implements IMapper
 
 	/**
 	 * @param array|mixed $data
-	 * @param \DOMNode $xml
+	 * @param DOMNode $xml
 	 * @param string|NULL $previousKey
 	 */
-	private function toXml($data, \DOMNode $xml, $previousKey = null)
+	private function toXml($data, DOMNode $xml, $previousKey = null)
 	{
 		if (is_array($data) || $data instanceof Traversable) {
 			foreach ($data as $key => $value) {

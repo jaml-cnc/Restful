@@ -50,7 +50,7 @@ class Field implements IField
 	 * @param string $name
 	 * @param IValidator $validator
 	 */
-	public function __construct($name, IValidator $validator)
+	public function __construct(string $name, IValidator $validator)
 	{
 		$this->name = $name;
 		$this->validator = $validator;
@@ -64,7 +64,7 @@ class Field implements IField
 	 * @param mixed|null $argument
 	 * @return Field
 	 */
-	public function addRule($expression, $message = null, $argument = null, $code = 0)
+	public function addRule(string $expression, $message = null, $argument = null, $code = 0): IField
 	{
 		$rule = new Rule;
 		$rule->field = $this->name;
@@ -131,7 +131,7 @@ class Field implements IField
 	 *
 	 * @return string
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}

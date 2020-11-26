@@ -5,11 +5,13 @@ namespace Drahak\Restful\Application\Events;
 use Drahak\Restful\Application\BadRequestException;
 use Drahak\Restful\Application\MethodOptions;
 use Drahak\Restful\Http\Request;
+use Exception;
 use Nette\Application\Application;
 use Nette\Application\BadRequestException as NetteBadRequestException;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\SmartObject;
+use Throwable;
 
 /**
  * MethodHandler
@@ -58,10 +60,10 @@ class MethodHandler
 	/**
 	 * On application error
 	 *
-	 * @param Application $application
-	 * @param \Exception|\Throwable $e
+	 * @param Exception|Throwable $e
+	 * @throws BadRequestException
 	 */
-	public function error(Application $application, $e)
+	public function error($e)
 	{
 		if ($e instanceof NetteBadRequestException && $e->getCode() === 404) {
 			$this->checkAllowedMethods();

@@ -5,9 +5,9 @@ namespace Drahak\Restful\Application\Routes;
 use Drahak\Restful\InvalidArgumentException;
 use Nette;
 use Nette\Application;
-use Nette\Application\IRouter;
 use Nette\Http;
 use Nette\Http\IRequest;
+use Nette\Routing\Router;
 use Nette\SmartObject;
 use Nette\Utils\Strings;
 
@@ -18,7 +18,7 @@ use Nette\Utils\Strings;
  *
  * @author Drahomír Hanák
  */
-class StrictRoute implements IRouter
+class StrictRoute implements Router
 {
 	use SmartObject;
 

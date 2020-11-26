@@ -38,6 +38,8 @@ class BasicAuthentication extends AuthenticationProcess
 		if (!$this->user->isLoggedIn()) {
 			throw new AuthenticationException('User not logged in');
 		}
+
+		return true;
 	}
 
 	/**
@@ -52,6 +54,8 @@ class BasicAuthentication extends AuthenticationProcess
 		if ($this->user->getLogoutReason() === IUserStorage::INACTIVITY) {
 			throw new RequestTimeoutException('User session expired');
 		}
+
+		return true;
 	}
 
 }

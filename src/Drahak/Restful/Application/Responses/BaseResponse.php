@@ -6,6 +6,8 @@ use Drahak;
 use Drahak\Restful\Mapping\IMapper;
 use Nette\Application\IResponse;
 use Nette\SmartObject;
+use stdClass;
+use Traversable;
 
 /**
  * BaseResponse
@@ -20,7 +22,7 @@ abstract class BaseResponse implements IResponse
 {
 	use SmartObject;
 
-	/** @var array|\stdClass|\Traversable */
+	/** @var array|stdClass|Traversable */
 	protected $data;
 	/** @var IMapper */
 	protected $mapper;
@@ -44,7 +46,7 @@ abstract class BaseResponse implements IResponse
 	 *
 	 * @param boolean $pretty
 	 */
-	public function setPrettyPrint($pretty)
+	public function setPrettyPrint(bool $pretty)
 	{
 		$this->prettyPrint = (bool)$pretty;
 
@@ -74,7 +76,7 @@ abstract class BaseResponse implements IResponse
 	/**
 	 * Get response data
 	 *
-	 * @return array|\stdClass|\Traversable
+	 * @return array|stdClass|Traversable
 	 */
 	public function getData()
 	{

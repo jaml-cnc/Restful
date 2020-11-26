@@ -3,6 +3,7 @@
 namespace Drahak\Restful\Mapping;
 
 use Nette\SmartObject;
+use Traversable;
 
 /**
  * NullMapper
@@ -17,7 +18,7 @@ class NullMapper implements IMapper
 	/**
 	 * Convert array or Traversable input to string output response
 	 *
-	 * @param array|\Traversable $data
+	 * @param array|Traversable $data
 	 * @param bool $prettyPrint
 	 * @return mixed
 	 */
@@ -30,7 +31,7 @@ class NullMapper implements IMapper
 	 * Convert client request data to array or traversable
 	 *
 	 * @param mixed $data
-	 * @return array|\Traversable
+	 * @return array|Traversable
 	 *
 	 * @throws MappingException
 	 */

@@ -11,6 +11,7 @@ use Drahak\Restful\Validation\IValidationScopeFactory;
 use Nette;
 use Nette\Http\IRequest;
 use Nette\SmartObject;
+use Traversable;
 
 /**
  * InputFactory
@@ -26,8 +27,6 @@ class InputFactory
 	protected $httpRequest;
 	/** @var IValidationScopeFactory */
 	private $validationScopeFactory;
-	/** @var IMapper */
-	private $mapper;
 	/** @var MapperContext */
 	private $mapperContext;
 
@@ -50,6 +49,7 @@ class InputFactory
 	 * Create input
 	 *
 	 * @return Input
+	 * @throws BadRequestException
 	 */
 	public function create()
 	{
@@ -78,7 +78,7 @@ class InputFactory
 	/**
 	 * Parse request body if any
 	 *
-	 * @return array|\Traversable
+	 * @return array|Traversable
 	 *
 	 * @throws BadRequestException
 	 */
@@ -91,8 +91,8 @@ class InputFactory
 
 		if ($input) {
 			try {
-				$this->mapper = $this->mapperContext->getMapper($this->httpRequest->getHeader('Content-Type'));
-				$requestBody = $this->mapper->parse($input);
+				$mapper = $this->mapperContext->getMapper($this->httpRequest->getHeader('Content-Type'));
+				$requestBody = $mapper->parse($input);
 			} catch (InvalidStateException $e) {
 				throw BadRequestException::unsupportedMediaType(
 					'No mapper defined for Content-Type ' . $this->httpRequest->getHeader('Content-Type'),
