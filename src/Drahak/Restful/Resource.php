@@ -1,39 +1,42 @@
 <?php
+
 namespace Drahak\Restful;
 
 use ArrayAccess;
-use Serializable;
 use ArrayIterator;
 use IteratorAggregate;
-use Nette\Object;
-use Nette\Utils\Json;
 use Nette\MemberAccessException;
+use Nette\SmartObject;
+use Nette\Utils\Json;
+use Serializable;
 
 /**
  * REST resource
+ *
  * @package Drahak\Restful
  * @author Drahomír Hanák
  *
  * @property string $contentType Allowed result content type
  * @property-read array $data
  */
-class Resource extends Object implements ArrayAccess, Serializable, IteratorAggregate, IResource
+class Resource implements ArrayAccess, Serializable, IteratorAggregate, IResource
 {
-
+	use SmartObject;
 
 	/** @var array */
-	private $data = array();
+	private $data = [];
 
 	/**
 	 * @param array $data
 	 */
-	public function __construct(array $data = array())
+	public function __construct(array $data = [])
 	{
 		$this->data = $data;
 	}
 
 	/**
 	 * Get result set data
+	 *
 	 * @return array
 	 */
 	public function getData()
@@ -43,6 +46,7 @@ class Resource extends Object implements ArrayAccess, Serializable, IteratorAggr
 
 	/**
 	 * get info if the resource has some data set or is empty
+	 *
 	 * @return boolean
 	 */
 	public function hasData()
@@ -54,6 +58,7 @@ class Resource extends Object implements ArrayAccess, Serializable, IteratorAggr
 
 	/**
 	 * Serialize result set
+	 *
 	 * @return string
 	 */
 	public function serialize()
@@ -63,6 +68,7 @@ class Resource extends Object implements ArrayAccess, Serializable, IteratorAggr
 
 	/**
 	 * Unserialize Resource
+	 *
 	 * @param string $serialized
 	 */
 	public function unserialize($serialized)
@@ -96,7 +102,7 @@ class Resource extends Object implements ArrayAccess, Serializable, IteratorAggr
 	 */
 	public function offsetSet($offset, $value)
 	{
-		if ($offset === NULL) {
+		if ($offset === null) {
 			$offset = count($this->data);
 		}
 		$this->data[$offset] = $value;
@@ -114,6 +120,7 @@ class Resource extends Object implements ArrayAccess, Serializable, IteratorAggr
 
 	/**
 	 * Get resource data iterator
+	 *
 	 * @return ArrayIterator
 	 */
 	public function getIterator()
@@ -125,10 +132,11 @@ class Resource extends Object implements ArrayAccess, Serializable, IteratorAggr
 
 	/**
 	 * Magic getter from $this->data
+	 *
 	 * @param string $name
 	 *
-	 * @throws \Exception|\Nette\MemberAccessException
 	 * @return mixed
+	 * @throws \Exception|\Nette\MemberAccessException
 	 */
 	public function &__get($name)
 	{
@@ -140,11 +148,11 @@ class Resource extends Object implements ArrayAccess, Serializable, IteratorAggr
 			}
 			throw $e;
 		}
-
 	}
 
 	/**
 	 * Magic setter to $this->data
+	 *
 	 * @param string $name
 	 * @param mixed $value
 	 */
@@ -159,16 +167,18 @@ class Resource extends Object implements ArrayAccess, Serializable, IteratorAggr
 
 	/**
 	 * Magic isset to $this->data
+	 *
 	 * @param string $name
 	 * @return bool
 	 */
 	public function __isset($name)
 	{
-		return !parent::__isset($name) ? isset($this->data[$name]) : TRUE;
+		return !parent::__isset($name) ? isset($this->data[$name]) : true;
 	}
 
 	/**
 	 * Magic unset from $this->data
+	 *
 	 * @param string $name
 	 * @throws \Exception|\Nette\MemberAccessException
 	 */
@@ -179,11 +189,10 @@ class Resource extends Object implements ArrayAccess, Serializable, IteratorAggr
 		} catch (MemberAccessException $e) {
 			if (isset($this->data[$name])) {
 				unset($this->data[$name]);
+
 				return;
 			}
 			throw $e;
 		}
 	}
-
-
 }

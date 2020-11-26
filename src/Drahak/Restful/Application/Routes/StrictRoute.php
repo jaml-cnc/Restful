@@ -1,32 +1,33 @@
 <?php
+
 namespace Drahak\Restful\Application\Routes;
 
-use Nette\Object;
-use Nette\Application\IRouter;
-use Nette\Application\Routers\Route;
-use Nette\Http;
-use Nette\Http\Url;
-use Nette\Utils\Strings;
+use Drahak\Restful\InvalidArgumentException;
+use Nette;
 use Nette\Application;
-use Drahak\Restful\Application\IResourceRouter;
+use Nette\Application\IRouter;
+use Nette\Http;
+use Nette\Http\IRequest;
+use Nette\SmartObject;
+use Nette\Utils\Strings;
 
 /**
- * API strict route 
+ * API strict route
  * - forces URL in form <prefix>/<presenter>[/<relation>[/<relationId>[/<relation>...]]]
  * - contrtructs app request to <Module>:<Presenter>:read<Relation[0]><Relation[1]>(<RelationId[0]>, <RelationId[1]>, ...)
+ *
  * @author Drahomír Hanák
  */
-class StrictRoute extends Object implements IRouter
+class StrictRoute implements IRouter
 {
+	use SmartObject;
 
 	/** @var string */
 	protected $prefix;
-
 	/** @var string|NULL */
 	protected $module;
-
 	/** method dictionary */
-	protected $methods = array(
+	protected $methods = [
 		Http\IRequest::GET => 'read',
 		Http\IRequest::POST => 'create',
 		Http\IRequest::PUT => 'update',
@@ -34,28 +35,29 @@ class StrictRoute extends Object implements IRouter
 		Http\IRequest::HEAD => 'head',
 		'PATCH' => 'patch',
 		'OPTIONS' => 'options',
-	);
+	];
 
 	/**
-	 * @param  string $prefix 
-	 * @param  stirng $module
+	 * @param string $prefix
+	 * @param string|null $module
 	 */
-	public function __construct($prefix = '', $module = NULL)
+	public function __construct($prefix = '', $module = null)
 	{
 		$this->prefix = $prefix;
 		$this->module = $module;
 	}
-	
+
 	/**
 	 * Match request
-	 * @param  IRequest $request 
-	 * @return Request            
+	 *
+	 * @param IRequest $request
+	 * @return array|null
 	 */
-	public function match(Http\IRequest $request)
+	public function match(Http\IRequest $request): ?array
 	{
 		$path = $request->url->getPathInfo();
 		if (!Strings::contains($path, $this->prefix)) {
-			return NULL;
+			return null;
 		}
 
 		$path = Strings::substring($path, strlen($this->prefix) + 1);
@@ -64,42 +66,52 @@ class StrictRoute extends Object implements IRouter
 
 		$action = $this->getActionName($request->getMethod(), $pathArguments);
 		$params = $this->getPathParameters($pathArguments);
-		$params[Route::MODULE_KEY] = $this->module;
-		$params[Route::PRESENTER_KEY] = $pathParts[0];
+		$params['module'] = $this->module;
+		$params['presenter'] = $pathParts[0];
 		$params['action'] = $action;
 
-		$presenter = ($this->module ? $this->module . ':' : '') . $params[Route::PRESENTER_KEY];
+		$presenter = ($this->module ? $this->module . ':' : '') . $params['presenter'];
 
-		$appRequest = new Application\Request($presenter, $request->getMethod(), $params, $request->getPost(), $request->getFiles());
-		return $appRequest;
+		$appRequest = new Application\Request(
+			$presenter,
+			$request->getMethod(),
+			$params,
+			$request->getPost(),
+			$request->getFiles()
+		);
+
+		return $appRequest->toArray();
 	}
-	
-	public function constructUrl(Application\Request $request, Url $refUrl)
+
+	function constructUrl(array $params, Nette\Http\UrlScript $refUrl): ?string
 	{
-		return NULL;
+		return null;
 	}
 
 	/**
 	 * Get path parameters
-	 * @param  array $arguments 
-	 * @return array            
+	 *
+	 * @param array $arguments
+	 * @return array
 	 */
-	private function getPathParameters($arguments)
+	private function getPathParameters(array $arguments)
 	{
-		$parameters = array();
+		$parameters = [];
 		for ($i = 1, $count = count($arguments); $i < $count; $i += 2) {
 			$parameters[] = $arguments[$i];
 		}
-		return array('params' => $parameters);
+
+		return ['params' => $parameters];
 	}
 
 	/**
-	 * Get action name 
-	 * @param  string $method   
-	 * @param  array $arguments 
+	 * Get action name
+	 *
+	 * @param string $method
+	 * @param array $arguments
 	 * @return string
 	 */
-	private function getActionName($method, $arguments)
+	private function getActionName(string $method, array $arguments)
 	{
 		if (!isset($this->methods[$method])) {
 			throw new InvalidArgumentException(
@@ -109,9 +121,9 @@ class StrictRoute extends Object implements IRouter
 
 		$name = $this->methods[$method];
 		for ($i = 0, $count = count($arguments); $i < $count; $i += 2) {
-			$name += Strings::firstUpper($arguments[$i]);
+			$name .= Strings::firstUpper($arguments[$i]);
 		}
+
 		return $name;
 	}
-
 }

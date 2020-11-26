@@ -1,41 +1,38 @@
 <?php
+
 namespace Drahak\Restful\Application;
 
-use Nette\Object;
-use Nette\DI\Container;
-use Nette\Caching\IStorage;
-use Nette\Loaders\RobotLoader;
-use Nette\Reflection\Method;
-use Nette\Reflection\ClassType;
-use Drahak\Restful\Utils\Strings;
-use Drahak\Restful\InvalidStateException;
-use Drahak\Restful\Application\RouteAnnotation;
 use Drahak\Restful\Application\Routes\ResourceRoute;
 use Drahak\Restful\Application\Routes\ResourceRouteList;
+use Drahak\Restful\InvalidStateException;
+use Drahak\Restful\Utils\Strings;
+use Nette\Caching\IStorage;
+use Nette\Loaders\RobotLoader;
+use Nette\Reflection\ClassType;
+use Nette\Reflection\Method;
+use Nette\SmartObject;
 
 /**
  * RouteListFactory
+ *
  * @package Drahak\Restful\Application\Routes
  * @author Drahomír Hanák
  *
  * @property-write string $module
  * @property-write string $prefix
  */
-class RouteListFactory extends Object implements IRouteListFactory
+class RouteListFactory implements IRouteListFactory
 {
+	use SmartObject;
 
 	/** @var RobotLoader */
 	private $loader;
-
 	/** @var string */
 	private $module;
-
 	/** @var string */
 	private $prefix;
-
 	/** @var IStorage */
 	private $cacheStorage;
-
 	/** @var RouteAnnotation */
 	private $routeAnnotation;
 
@@ -60,32 +57,37 @@ class RouteListFactory extends Object implements IRouteListFactory
 
 	/**
 	 * Set default module of created routes
+	 *
 	 * @param string $module
 	 * @return ResourceRoute
 	 */
 	public function setModule($module)
 	{
 		$this->module = $module;
+
 		return $this;
 	}
 
 	/**
 	 * Set default routes URL mask prefix
+	 *
 	 * @param string $prefix
 	 * @return RouteListFactory
 	 */
 	public function setPrefix($prefix)
 	{
 		$this->prefix = $prefix;
+
 		return $prefix;
 	}
 
 	/**
 	 * Create route list
+	 *
 	 * @param string|null $module
 	 * @return ResourceRouteList
 	 */
-	public final function create($module = NULL)
+	public final function create($module = null)
 	{
 		$routeList = new ResourceRouteList($module ? $module : $this->module);
 		foreach ($this->loader->getIndexedClasses() as $class => $file) {
@@ -99,6 +101,7 @@ class RouteListFactory extends Object implements IRouteListFactory
 			$routeData = $this->parseClassRoutes($methods);
 			$this->addRoutes($routeList, $routeData, $class);
 		}
+
 		return $routeList;
 	}
 
@@ -106,6 +109,7 @@ class RouteListFactory extends Object implements IRouteListFactory
 
 	/**
 	 * Add class routes to route list
+	 *
 	 * @param ResourceRouteList $routeList
 	 * @param array $routeData
 	 * @param string $className
@@ -117,16 +121,20 @@ class RouteListFactory extends Object implements IRouteListFactory
 	{
 		$presenter = str_replace('Presenter', '', self::getClassReflection($className)->getShortName());
 		foreach ($routeData as $mask => $dictionary) {
-			$routeList[] = new ResourceRoute($mask, array(
+			$routeList[] = new ResourceRoute(
+				$mask, [
 				'presenter' => $presenter,
-				'action' => $dictionary
-			), IResourceRouter::RESTFUL);
+				'action' => $dictionary,
+			], IResourceRouter::RESTFUL
+			);
 		}
+
 		return $routeList;
 	}
 
 	/**
 	 * Get class methods
+	 *
 	 * @param string $className
 	 * @return Method[]
 	 *
@@ -139,16 +147,18 @@ class RouteListFactory extends Object implements IRouteListFactory
 
 	/**
 	 * Parse route annotations on given object methods
+	 *
 	 * @param Method[] $methods
 	 * @return array $data[URL mask][request method] = action name e.g. $data['api/v1/articles']['GET'] = 'read'
 	 */
 	protected function parseClassRoutes($methods)
 	{
-		$routeData = array();
+		$routeData = [];
 		foreach ($methods as $method) {
 			// Parse annotations only on action methods
-			if (!Strings::contains($method->getName(), 'action'))
+			if (!Strings::contains($method->getName(), 'action')) {
 				continue;
+			}
 
 			$annotations = $this->routeAnnotation->parse($method);
 			foreach ($annotations as $requestMethod => $mask) {
@@ -156,17 +166,19 @@ class RouteListFactory extends Object implements IRouteListFactory
 				$action = Strings::firstLower($action);
 
 				$pattern = $this->prefix ?
-					$this->prefix . '/' .  $mask :
+					$this->prefix . '/' . $mask :
 					$mask;
 
 				$routeData[$pattern][$requestMethod] = $action;
 			}
 		}
+
 		return $routeData;
 	}
 
 	/**
 	 * Get class reflection
+	 *
 	 * @param string $className
 	 * @return ClassType
 	 *
@@ -175,7 +187,7 @@ class RouteListFactory extends Object implements IRouteListFactory
 	private static function getClassReflection($className)
 	{
 		$class = class_exists('Nette\Reflection\ClassType') ? 'Nette\Reflection\ClassType' : 'ReflectionClass';
+
 		return new $class($className);
 	}
-
 }

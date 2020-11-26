@@ -1,33 +1,37 @@
 <?php
+
 namespace Drahak\Restful\Validation;
 
-use Drahak\Restful\InvalidStateException;
 use Drahak\Restful\InvalidArgumentException;
-use Nette\Object;
+use Drahak\Restful\InvalidStateException;
+use Nette\SmartObject;
 use Nette\Utils\Strings;
 use Nette\Utils\Validators;
 
 /**
  * Rule validator
+ *
  * @package Drahak\Restful\Validation
  * @author Drahomír Hanák
  */
-class Validator extends Object implements IValidator
+class Validator implements IValidator
 {
+	use SmartObject;
 
 	/** @var array Command handle callbacks */
-	public $handle = array(
-		self::EMAIL => array(__CLASS__, 'validateEmail'),
-		self::URL => array(__CLASS__, 'validateUrl'),
-		self::REGEXP => array(__CLASS__, 'validateRegexp'),
-		self::EQUAL => array(__CLASS__, 'validateEquality'),
-		self::UUID => array(__CLASS__, 'validateUuid'),
-		self::CALLBACK => array(__CLASS__, 'validateCallback'),
-		self::REQUIRED => array(__CLASS__, 'validateRequired')
-	);
+	public $handle = [
+		self::EMAIL => [__CLASS__, 'validateEmail'],
+		self::URL => [__CLASS__, 'validateUrl'],
+		self::REGEXP => [__CLASS__, 'validateRegexp'],
+		self::EQUAL => [__CLASS__, 'validateEquality'],
+		self::UUID => [__CLASS__, 'validateUuid'],
+		self::CALLBACK => [__CLASS__, 'validateCallback'],
+		self::REQUIRED => [__CLASS__, 'validateRequired'],
+	];
 
 	/**
 	 * Validate value for this rule
+	 *
 	 * @param mixed $value
 	 * @param Rule $rule
 	 * @return bool
@@ -41,22 +45,26 @@ class Validator extends Object implements IValidator
 			$callback = $this->handle[$rule->expression];
 			if (!is_callable($callback)) {
 				throw new InvalidStateException(
-					'Handle for expression ' . $rule->expression . ' not found or is not callable');
+					'Handle for expression ' . $rule->expression . ' not found or is not callable'
+				);
 			}
-			$params = array($value, $rule);
+			$params = [$value, $rule];
 			call_user_func_array($callback, $params);
-			return TRUE;
+
+			return true;
 		}
 
 		$expression = $this->parseExpression($rule);
 		if (!Validators::is($value, $expression)) {
 			throw ValidationException::createFromRule($rule, $value);
 		}
-		return TRUE;
+
+		return true;
 	}
 
 	/**
 	 * Parse nette validator expression
+	 *
 	 * @param Rule $rule
 	 * @return string
 	 */
@@ -69,6 +77,7 @@ class Validator extends Object implements IValidator
 				'Invalid number of arguments for expression "' . $rule->expression . '". Expected ' . $expectedArgumentsCount . ', ' . $givenArgumentsCount . ' given.'
 			);
 		}
+
 		return vsprintf($rule->expression, $rule->argument);
 	}
 
@@ -76,8 +85,9 @@ class Validator extends Object implements IValidator
 
 	/**
 	 * Validate callback rule
-	 * @param  string|numeric|null $value 
-	 * @param  Rule   $rule  
+	 *
+	 * @param string|numeric|null $value
+	 * @param Rule $rule
 	 *
 	 * @throws  ValidationException If callback returns false
 	 */
@@ -85,27 +95,29 @@ class Validator extends Object implements IValidator
 	{
 		$callback = $rule->argument[0];
 		$result = $callback($value);
-		if ($result === FALSE) {
+		if ($result === false) {
 			throw ValidationException::createFromRule($rule, $value);
 		}
 	}
 
 	/**
 	 * Validate required rule
-	 * @param  string|numeric|null $value 
-	 * @param  Rule   $rule  
+	 *
+	 * @param string|numeric|null $value
+	 * @param Rule $rule
 	 *
 	 * @throws  ValidationException If field value is missing (is NULL)
 	 */
 	public static function validateRequired($value, Rule $rule)
 	{
-		if ($value === NULL) {
+		if ($value === null) {
 			throw ValidationException::createFromRule($rule, $value);
 		}
 	}
 
 	/**
 	 * Validate regexp
+	 *
 	 * @param mixed $value
 	 * @param Rule $rule
 	 *
@@ -125,6 +137,7 @@ class Validator extends Object implements IValidator
 
 	/**
 	 * Validate equality
+	 *
 	 * @param string $value
 	 * @param Rule $rule
 	 * @throws ValidationException
@@ -138,6 +151,7 @@ class Validator extends Object implements IValidator
 
 	/**
 	 * Validate email
+	 *
 	 * @param string $value
 	 * @param Rule $rule
 	 * @throws ValidationException
@@ -151,6 +165,7 @@ class Validator extends Object implements IValidator
 
 	/**
 	 * Validate URL
+	 *
 	 * @param string $value
 	 * @param Rule $rule
 	 * @throws ValidationException
@@ -164,16 +179,19 @@ class Validator extends Object implements IValidator
 
 	/**
 	 * Validate UUID
+	 *
 	 * @param string $value
 	 * @param Rule $rule
 	 * @throws ValidationException
 	 */
 	public static function validateUuid($value, Rule $rule)
 	{
-		$isUuid = (bool)preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i", $value);
+		$isUuid = (bool)preg_match(
+			"/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i",
+			$value
+		);
 		if (!$isUuid) {
 			throw ValidationException::createFromRule($rule, $value);
 		}
 	}
-
 }

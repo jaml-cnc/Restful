@@ -1,13 +1,15 @@
 <?php
+
 namespace Drahak\Restful\Validation;
 
-use Nette\Object;
-use IteratorAggregate;
 use ArrayIterator;
+use IteratorAggregate;
+use Nette\SmartObject;
 use Traversable;
 
 /**
  * Validation error caret
+ *
  * @package Drahak\Restful\Validation
  * @author Drahomír Hanák
  *
@@ -15,15 +17,14 @@ use Traversable;
  * @property-read string $message
  * @property-read int $code
  */
-class Error extends Object implements IteratorAggregate
+class Error implements IteratorAggregate
 {
+	use SmartObject;
 
 	/** @var string */
 	private $field;
-
 	/** @var string */
 	private $message;
-
 	/** @var int */
 	private $code;
 
@@ -41,21 +42,23 @@ class Error extends Object implements IteratorAggregate
 
 	/**
 	 * Converts error caret to an array
+	 *
 	 * @return array
 	 */
 	public function toArray()
 	{
-		return array(
+		return [
 			'field' => $this->field,
 			'message' => $this->message,
-			'code' => $this->code
-		);
+			'code' => $this->code,
+		];
 	}
 
 	/****************** Getters ******************/
 
 	/**
 	 * Get error code
+	 *
 	 * @return int
 	 */
 	public function getCode()
@@ -65,6 +68,7 @@ class Error extends Object implements IteratorAggregate
 
 	/**
 	 * Get error field name
+	 *
 	 * @return string
 	 */
 	public function getField()
@@ -74,6 +78,7 @@ class Error extends Object implements IteratorAggregate
 
 	/**
 	 * Get validation error message
+	 *
 	 * @return string
 	 */
 	public function getMessage()
@@ -85,11 +90,11 @@ class Error extends Object implements IteratorAggregate
 
 	/**
 	 * Iterate through error data to convert it
+	 *
 	 * @return Traversable
 	 */
 	public function getIterator()
 	{
 		return new ArrayIterator($this->toArray());
 	}
-
 }

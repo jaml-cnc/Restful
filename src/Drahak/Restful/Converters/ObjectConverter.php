@@ -1,21 +1,25 @@
 <?php
+
 namespace Drahak\Restful\Converters;
 
+use Drahak\Restful\IResource;
+use Nette\SmartObject;
 use stdClass;
 use Traversable;
-use Nette\Object;
-use Drahak\Restful\IResource;
 
 /**
  * ObjectConverter
+ *
  * @package Drahak\Restful\Converters
  * @author Drahomír Hanák
  */
-class ObjectConverter extends Object implements IConverter
+class ObjectConverter implements IConverter
 {
+	use SmartObject;
 
 	/**
 	 * Converts stdClass and traversable objects in resource to array
+	 *
 	 * @param array $resource
 	 * @return array
 	 */
@@ -26,15 +30,18 @@ class ObjectConverter extends Object implements IConverter
 
 	/**
 	 * Parse objects in resource
+	 *
 	 * @param array|Traversable|stdClass $data
 	 * @return array
 	 */
 	protected function parseObjects($data)
 	{
 		if ($data instanceof Traversable) {
-			$data = iterator_to_array($data, TRUE);
-		} else if ($data instanceof stdClass) {
-			$data = (array)$data;
+			$data = iterator_to_array($data, true);
+		} else {
+			if ($data instanceof stdClass) {
+				$data = (array)$data;
+			}
 		}
 
 		foreach ($data as $key => $value) {
@@ -46,7 +53,7 @@ class ObjectConverter extends Object implements IConverter
 				$data[$key] = $this->parseObjects($value);
 			}
 		}
+
 		return $data;
 	}
-
 }

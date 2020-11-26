@@ -1,30 +1,36 @@
 <?php
+
 namespace Drahak\Restful\Converters;
 
 use Drahak\Restful\Utils\Strings;
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * SnakeCaseConverter
+ *
  * @package Drahak\Restful\Converters
  * @author Drahomír Hanák
  */
-class SnakeCaseConverter extends Object implements IConverter
+class SnakeCaseConverter implements IConverter
 {
+	use SmartObject;
 
-    /**
-     * Converts resource data keys to snake_case
-     * @param array $resource
-     * @return array
-     */
-    public function convert(array $resource)
+	/**
+	 * Converts resource data keys to snake_case
+	 *
+	 * @param array $resource
+	 * @return array
+	 */
+	public function convert(array $resource)
 	{
 		$this->convertToSnake($resource);
+
 		return $resource;
 	}
 
 	/**
 	 * Convert array keys to snake case
+	 *
 	 * @param array|\Traversable $array
 	 */
 	private function convertToSnake(&$array)
@@ -45,5 +51,4 @@ class SnakeCaseConverter extends Object implements IConverter
 			unset($value);
 		}
 	}
-
 }

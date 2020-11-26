@@ -1,30 +1,36 @@
 <?php
+
 namespace Drahak\Restful\Converters;
 
-use Nette\Object;
 use Drahak\Restful\Utils\Strings;
+use Nette\SmartObject;
 
 /**
  * CamelCaseConverter
+ *
  * @package Drahak\Restful\Converters
  * @author Drahomír Hanák
  */
-class CamelCaseConverter extends Object implements IConverter
+class CamelCaseConverter implements IConverter
 {
+	use SmartObject;
 
-    /**
-     * Converts resource data keys to camelCase
-     * @param array $resource
-     * @return array
-     */
+	/**
+	 * Converts resource data keys to camelCase
+	 *
+	 * @param array $resource
+	 * @return array
+	 */
 	public function convert(array $resource)
 	{
 		$this->convertToCamel($resource);
+
 		return $resource;
 	}
 
 	/**
 	 * Convert array keys to camel case
+	 *
 	 * @param array|\Traversable $array
 	 */
 	private function convertToCamel(&$array)
@@ -45,5 +51,4 @@ class CamelCaseConverter extends Object implements IConverter
 			unset($value);
 		}
 	}
-
 }

@@ -1,17 +1,20 @@
 <?php
+
 namespace Drahak\Restful\Converters;
 
-use Nette\Object;
-use Traversable;
 use DateTime;
+use Nette\SmartObject;
+use Traversable;
 
 /**
  * DateTimeConverter
+ *
  * @package Drahak\Restful\Converters
  * @author Drahomír Hanák
  */
-class DateTimeConverter extends Object implements IConverter
+class DateTimeConverter implements IConverter
 {
+	use SmartObject;
 
 	/** DateTime format */
 	private $format = 'c';
@@ -24,14 +27,16 @@ class DateTimeConverter extends Object implements IConverter
 		$this->format = $format;
 	}
 
-    /**
-     * Converts DateTime objects in resource to string
-     * @param array $resource
-     * @return array
-     */
+	/**
+	 * Converts DateTime objects in resource to string
+	 *
+	 * @param array $resource
+	 * @return array
+	 */
 	public function convert(array $resource)
 	{
 		$data = $this->parseDateTimeToString($resource);
+
 		return $data;
 	}
 
@@ -42,9 +47,12 @@ class DateTimeConverter extends Object implements IConverter
 	private function parseDateTimeToString($array)
 	{
 		if (!is_array($array)) {
-			if ($array instanceof DateTime || interface_exists('DateTimeInterface') && $array instanceof \DateTimeInterface) {
+			if ($array instanceof DateTime || interface_exists(
+					'DateTimeInterface'
+				) && $array instanceof \DateTimeInterface) {
 				return $array->format($this->format);
 			}
+
 			return $array;
 		}
 
@@ -53,7 +61,7 @@ class DateTimeConverter extends Object implements IConverter
 				$array[$key] = $this->parseDateTimeToString($value);
 			}
 		}
+
 		return $array;
 	}
-
 }

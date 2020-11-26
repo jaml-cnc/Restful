@@ -1,11 +1,13 @@
 <?php
+
 namespace Drahak\Restful\Validation;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nette\Utils\Validators;
 
 /**
  * Validation field
+ *
  * @package Drahak\Restful\Validation
  * @author Drahomír Hanák
  *
@@ -13,11 +15,12 @@ use Nette\Utils\Validators;
  * @property-read Rule[] $rules
  * @property-read IValidator $validator
  */
-class Field extends Object implements IField
+class Field implements IField
 {
+	use SmartObject;
 
 	/** @var array Default field error messages for validator */
-	public static $defaultMessages = array(
+	public static $defaultMessages = [
 		IValidator::EQUAL => 'Please enter %s.',
 		IValidator::MIN_LENGTH => 'Please enter a value of at least %d characters.',
 		IValidator::MAX_LENGTH => 'Please enter a value no longer than %d characters.',
@@ -28,19 +31,18 @@ class Field extends Object implements IField
 		IValidator::FLOAT => 'Please enter a numeric value.',
 		IValidator::RANGE => 'Please enter a value between %d and %d.',
 		IValidator::UUID => 'Please enter a valid UUID.',
-	);
-
+	];
 	/** @var array Numeric expressions that needs to convert value from string (because of x-www-form-urlencoded) */
-	protected static $numericExpressions = array(
-		IValidator::INTEGER, IValidator::FLOAT, IValidator::NUMERIC, IValidator::RANGE
-	);
-
+	protected static $numericExpressions = [
+		IValidator::INTEGER,
+		IValidator::FLOAT,
+		IValidator::NUMERIC,
+		IValidator::RANGE,
+	];
 	/** @var Rule[] */
-	private $rules = array();
-
+	private $rules = [];
 	/** @var IValidator */
 	private $validator;
-
 	/** @var string */
 	private $name;
 
@@ -56,12 +58,13 @@ class Field extends Object implements IField
 
 	/**
 	 * Add validation rule for this field
+	 *
 	 * @param string $expression
 	 * @param string|null $message
 	 * @param mixed|null $argument
 	 * @return Field
 	 */
-	public function addRule($expression, $message = NULL, $argument = NULL, $code = 0)
+	public function addRule($expression, $message = null, $argument = null, $code = 0)
 	{
 		$rule = new Rule;
 		$rule->field = $this->name;
@@ -70,26 +73,28 @@ class Field extends Object implements IField
 		$rule->argument = $argument;
 		$rule->code = $code;
 
-		if ($message === NULL && isset(self::$defaultMessages[$expression])) {
+		if ($message === null && isset(self::$defaultMessages[$expression])) {
 			$rule->message = self::$defaultMessages[$expression];
 		}
 
 		$this->rules[] = $rule;
+
 		return $this;
 	}
 
 	/**
 	 * Validate field for given value
+	 *
 	 * @param mixed $value
 	 * @return Error[]
 	 */
 	public function validate($value)
 	{
-		if (!$this->isRequired() && $value === NULL) {
-			return array();
+		if (!$this->isRequired() && $value === null) {
+			return [];
 		}
 
-		$errors = array();
+		$errors = [];
 		foreach ($this->rules as $rule) {
 			try {
 				if (in_array($rule->expression, static::$numericExpressions)) {
@@ -101,25 +106,29 @@ class Field extends Object implements IField
 				$errors[] = new Error($e->getField(), $e->getMessage(), $e->getCode());
 			}
 		}
+
 		return $errors;
 	}
 
 	/**
 	 * Is field required
+	 *
 	 * @return bool
 	 */
 	public function isRequired()
 	{
 		foreach ($this->rules as $rule) {
 			if ($rule->expression === IValidator::REQUIRED) {
-				return TRUE;
+				return true;
 			}
 		}
-		return FALSE;
+
+		return false;
 	}
 
 	/**
 	 * Get field case-sensitive name
+	 *
 	 * @return string
 	 */
 	public function getName()
@@ -129,6 +138,7 @@ class Field extends Object implements IField
 
 	/**
 	 * Get field rules
+	 *
 	 * @return Rule[]
 	 */
 	public function getRules()
@@ -138,6 +148,7 @@ class Field extends Object implements IField
 
 	/**
 	 * Get validator
+	 *
 	 * @return IValidator
 	 */
 	public function getValidator()
@@ -147,14 +158,19 @@ class Field extends Object implements IField
 
 	/**
 	 * Convert string -> int, string -> float because of textual x-www-form-data
+	 *
 	 * @param mixed $value
 	 * @return mixed
 	 */
 	protected function parseNumericValue($value)
 	{
-		if (Validators::isNumericInt($value)) return (int)$value;
-		if (Validators::isNumeric($value)) return (float)$value;
+		if (Validators::isNumericInt($value)) {
+			return (int)$value;
+		}
+		if (Validators::isNumeric($value)) {
+			return (float)$value;
+		}
+
 		return $value;
 	}
-
 }

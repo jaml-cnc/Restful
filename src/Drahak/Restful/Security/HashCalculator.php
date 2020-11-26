@@ -1,29 +1,30 @@
 <?php
+
 namespace Drahak\Restful\Security;
 
 use Drahak\Restful\Http\IInput;
 use Drahak\Restful\InvalidStateException;
 use Drahak\Restful\Mapping\IMapper;
 use Drahak\Restful\Mapping\MapperContext;
-use Nette\Object;
 use Nette\Http\IRequest;
+use Nette\SmartObject;
 
 /**
  * Default auth token calculator implementation
+ *
  * @package Drahak\Restful\Security
  * @author Drahomír Hanák
  *
  * @property-write string $privateKey
  */
-class HashCalculator extends Object implements IAuthTokenCalculator
+class HashCalculator implements IAuthTokenCalculator
 {
+	use SmartObject;
 
 	/** Fingerprint hash algorithm */
 	const HASH = 'sha256';
-
 	/** @var string */
 	private $privateKey;
-
 	/** @var IMapper */
 	private $mapper;
 
@@ -38,28 +39,33 @@ class HashCalculator extends Object implements IAuthTokenCalculator
 
 	/**
 	 * Set hash data calculator mapper
+	 *
 	 * @param IMapper $mapper
 	 * @return HashCalculator
 	 */
 	public function setMapper(IMapper $mapper)
 	{
 		$this->mapper = $mapper;
+
 		return $this;
 	}
 
 	/**
 	 * Set hash calculator security private key
+	 *
 	 * @param string $privateKey
 	 * @return IAuthTokenCalculator
 	 */
 	public function setPrivateKey($privateKey)
 	{
 		$this->privateKey = $privateKey;
+
 		return $this;
 	}
 
 	/**
 	 * Calculates hash
+	 *
 	 * @param IInput $input
 	 * @return string
 	 *
@@ -72,7 +78,7 @@ class HashCalculator extends Object implements IAuthTokenCalculator
 		}
 
 		$dataString = $this->mapper->stringify($input->getData());
+
 		return hash_hmac(self::HASH, $dataString, $this->privateKey);
 	}
-
 }

@@ -1,34 +1,31 @@
 <?php
+
 namespace Drahak\Restful\Http;
 
 use ArrayIterator;
-use IteratorAggregate;
-use Nette\Object;
-use Nette\Http;
-use Nette\Utils\Json;
-use Nette\Utils\Strings;
-use Nette\MemberAccessException;
 use Drahak\Restful\Validation\IDataProvider;
 use Drahak\Restful\Validation\IField;
 use Drahak\Restful\Validation\IValidationScope;
 use Drahak\Restful\Validation\IValidationScopeFactory;
+use IteratorAggregate;
+use Nette\SmartObject;
 
 /**
  * Request Input parser
+ *
  * @package Drahak\Restful\Http
  * @author Drahomír Hanák
  *
  * @property array $data
  */
-class Input extends Object implements IteratorAggregate, IInput, IDataProvider
+class Input implements IteratorAggregate, IInput, IDataProvider
 {
+	use SmartObject;
 
 	/** @var array */
 	private $data;
-
 	/** @var IValidationScope */
 	private $validationScope;
-
 	/** @var IValidationScopeFactory */
 	private $validationScopeFactory;
 
@@ -36,7 +33,7 @@ class Input extends Object implements IteratorAggregate, IInput, IDataProvider
 	 * @param IValidationScopeFactory $validationScopeFactory
 	 * @param array $data
 	 */
-	public function __construct(IValidationScopeFactory $validationScopeFactory, array $data = array())
+	public function __construct(IValidationScopeFactory $validationScopeFactory, array $data = [])
 	{
 		$this->data = $data;
 		$this->validationScopeFactory = $validationScopeFactory;
@@ -46,6 +43,7 @@ class Input extends Object implements IteratorAggregate, IInput, IDataProvider
 
 	/**
 	 * Get parsed input data
+	 *
 	 * @return array
 	 */
 	public function getData()
@@ -55,12 +53,14 @@ class Input extends Object implements IteratorAggregate, IInput, IDataProvider
 
 	/**
 	 * Set input data
+	 *
 	 * @param array $data
 	 * @return Input
 	 */
 	public function setData(array $data)
 	{
 		$this->data = $data;
+
 		return $this;
 	}
 
@@ -78,7 +78,9 @@ class Input extends Object implements IteratorAggregate, IInput, IDataProvider
 		if (array_key_exists($name, $data)) {
 			return $data[$name];
 		}
-		throw new \Nette\MemberAccessException('Cannot read an undeclared property '.get_class($this).'::$'.$name.'.');
+		throw new \Nette\MemberAccessException(
+			'Cannot read an undeclared property ' . get_class($this) . '::$' . $name . '.'
+		);
 	}
 
 	/**
@@ -88,6 +90,7 @@ class Input extends Object implements IteratorAggregate, IInput, IDataProvider
 	public function __isset($name)
 	{
 		$data = $this->getData();
+
 		return array_key_exists($name, $data);
 	}
 
@@ -95,6 +98,7 @@ class Input extends Object implements IteratorAggregate, IInput, IDataProvider
 
 	/**
 	 * Get input data iterator
+	 *
 	 * @return InputIterator
 	 */
 	public function getIterator()
@@ -106,6 +110,7 @@ class Input extends Object implements IteratorAggregate, IInput, IDataProvider
 
 	/**
 	 * Get validation field
+	 *
 	 * @param string $name
 	 * @return IField
 	 */
@@ -116,6 +121,7 @@ class Input extends Object implements IteratorAggregate, IInput, IDataProvider
 
 	/**
 	 * Validate input data
+	 *
 	 * @return array
 	 */
 	public function validate()
@@ -125,6 +131,7 @@ class Input extends Object implements IteratorAggregate, IInput, IDataProvider
 
 	/**
 	 * Is input valid
+	 *
 	 * @return bool
 	 */
 	public function isValid()
@@ -134,6 +141,7 @@ class Input extends Object implements IteratorAggregate, IInput, IDataProvider
 
 	/**
 	 * Get validation scope
+	 *
 	 * @return IValidationScope
 	 */
 	public function getValidationScope()
@@ -141,7 +149,7 @@ class Input extends Object implements IteratorAggregate, IInput, IDataProvider
 		if (!$this->validationScope) {
 			$this->validationScope = $this->validationScopeFactory->create();
 		}
+
 		return $this->validationScope;
 	}
-
 }

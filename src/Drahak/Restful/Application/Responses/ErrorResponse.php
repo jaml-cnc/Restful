@@ -4,12 +4,13 @@ namespace Drahak\Restful\Application\Responses;
 
 use Nette\Application\IResponse;
 use Nette\Http;
-use Nette\Object;
+use Nette\SmartObject;
 
-class ErrorResponse extends Object implements IResponse {
+class ErrorResponse implements IResponse
+{
+	use SmartObject;
 
 	private $response;
-
 	private $code;
 
 	/**
@@ -24,6 +25,7 @@ class ErrorResponse extends Object implements IResponse {
 
 	/**
 	 * Get response data
+	 *
 	 * @return array|\stdClass|\Traversable
 	 */
 	public function getData()
@@ -33,6 +35,7 @@ class ErrorResponse extends Object implements IResponse {
 
 	/**
 	 * Get response content type
+	 *
 	 * @return string
 	 */
 	public function getContentType()
@@ -42,6 +45,7 @@ class ErrorResponse extends Object implements IResponse {
 
 	/**
 	 * Get response data
+	 *
 	 * @return array|\stdClass|\Traversable
 	 */
 	public function getCode()
@@ -51,13 +55,13 @@ class ErrorResponse extends Object implements IResponse {
 
 	/**
 	 * Sends response to output
+	 *
 	 * @param Http\IRequest $httpRequest
 	 * @param Http\IResponse $httpResponse
 	 */
-	public function send(Http\IRequest $httpRequest, Http\IResponse $httpResponse) {
+	public function send(Http\IRequest $httpRequest, Http\IResponse $httpResponse)
+	{
 		$httpResponse->setCode($this->code);
 		$this->response->send($httpRequest, $httpResponse);
 	}
-
 }
- 

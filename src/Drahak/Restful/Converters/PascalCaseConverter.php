@@ -1,30 +1,36 @@
 <?php
+
 namespace Drahak\Restful\Converters;
 
-use Nette\Object;
 use Drahak\Restful\Utils\Strings;
+use Nette\SmartObject;
 
 /**
  * PascalCaseConverter
+ *
  * @package Drahak\Restful\Converters
  * @author Drahomír Hanák
  */
-class PascalCaseConverter extends Object implements IConverter
+class PascalCaseConverter implements IConverter
 {
+	use SmartObject;
 
 	/**
 	 * Converts resource data keys to PascalCase
+	 *
 	 * @param array $resource
 	 * @return array
 	 */
 	public function convert(array $resource)
 	{
 		$this->convertToPascal($resource);
+
 		return $resource;
 	}
 
 	/**
 	 * Convert array keys to camel case
+	 *
 	 * @param array|\Traversable $array
 	 */
 	private function convertToPascal(&$array)
@@ -45,5 +51,4 @@ class PascalCaseConverter extends Object implements IConverter
 			unset($value);
 		}
 	}
-
 }

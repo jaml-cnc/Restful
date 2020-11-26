@@ -1,39 +1,44 @@
 <?php
+
 namespace Drahak\Restful\Mapping;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 
 /**
  * JsonMapper
+ *
  * @package Drahak\Restful\Mapping
  * @author Drahomír Hanák
  */
-class JsonMapper extends Object implements IMapper
+class JsonMapper implements IMapper
 {
+	use SmartObject;
 
 	/**
 	 * Convert array or Traversable input to string output response
+	 *
 	 * @param array|\Traversable $data
 	 * @param bool $prettyPrint
 	 * @return mixed
 	 *
 	 * @throws MappingException
 	 */
-	public function stringify($data, $prettyPrint = TRUE)
+	public function stringify($data, $prettyPrint = true)
 	{
 		try {
 			return Json::encode($data, $prettyPrint && defined('Nette\\Utils\\Json::PRETTY') ? Json::PRETTY : 0);
-		} catch(JsonException $e) {
+		} catch (JsonException $e) {
 			throw new MappingException('Error in parsing response: ' . $e->getMessage());
 		}
 	}
 
 	/**
 	 * Convert client request data to array or traversable
+	 *
 	 * @param string $data
-	 * @return array 
+	 * @return array
 	 *
 	 * @throws MappingException
 	 */
@@ -45,5 +50,4 @@ class JsonMapper extends Object implements IMapper
 			throw new MappingException('Error in parsing request: ' . $e->getMessage());
 		}
 	}
-
 }
